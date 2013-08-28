@@ -134,12 +134,30 @@ public class InterfazGrafica extends javax.swing.JFrame {
         Document doc = new DefaultStyledDocument();
         switch(tab.getSelectedIndex()){
             case 0:
-        try {
-            doc = ana.analizar(tabDigestivo.getText(), 0);
-        } catch (BadLocationException ex) {
-            Logger.getLogger(InterfazGrafica.class.getName()).log(Level.SEVERE, null, ex);
-        }
-                tabDigestivo.setDocument(doc);
+            try {
+                doc = ana.analizar(tabDigestivo.getText(), 0);
+            } catch (BadLocationException ex) {
+                Logger.getLogger(InterfazGrafica.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            tabDigestivo.setDocument(doc);
+                break;
+            case 1:
+                try {
+                doc = ana.analizar(tabOseo.getText(), 1);
+                } catch (BadLocationException ex) {
+                    Logger.getLogger(InterfazGrafica.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                tabOseo.setDocument(doc);
+                break;
+            case 2:
+                try {
+                doc = ana.analizar(tabGeneral.getText(), 2);
+                } catch (BadLocationException ex) {
+                    Logger.getLogger(InterfazGrafica.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                tabGeneral.setDocument(doc);
+                break;
+               
         }
     }//GEN-LAST:event_botonAnalizarActionPerformed
 

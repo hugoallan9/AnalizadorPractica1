@@ -22,7 +22,7 @@ import javax.swing.text.StyledDocument;
  */
 public class Analizador {
     private ArrayList<String> error, lexema, tipo;
-    private ArrayList<Integer> posicionFila, posicionColumna, token;
+    private ArrayList<Integer> posicionFila, posicionColumna, posicionFilaError, posicionColumnaError, token;
     private String valorLexema, cadenaSalida;
     private int fila, columna, posicionCarrete, inicioPalabra, pestania;
     private String palabraReservadaDigestivo[];
@@ -51,6 +51,8 @@ public class Analizador {
         lexema = new ArrayList();
         posicionFila = new ArrayList();
         posicionColumna = new ArrayList();
+        posicionFilaError = new ArrayList();
+        posicionColumnaError = new ArrayList();
         tipo = new ArrayList();
         palabraReservadaDigestivo = new String[4];
         palabraReservadaOseo = new String[7];
@@ -122,8 +124,14 @@ public class Analizador {
         boolean resultado = false;
         String extension = "";
         
-        for (int i = expresion.lastIndexOf(expresion) -3  ; i == expresion.lastIndexOf(expresion)  ; i++){
-            extension = extension + expresion.charAt(i);
+        if(expresion.length() >= 3){
+        try{
+            for (int i = expresion.length() - 4  ; i < expresion.length()  ; i++){
+                extension = extension + expresion.charAt(i);
+                System.out.println("La expresion va quendando: " + extension);
+            }
+        }catch(ArrayIndexOutOfBoundsException e){
+            System.err.println("La palabra es muy corta, debe ser un ID");
         }
         
         ciclofor:
@@ -136,14 +144,15 @@ public class Analizador {
         
         extension = "";
         
-        for (int i = expresion.lastIndexOf(expresion) -2  ; i == expresion.lastIndexOf(expresion)  ; i++){
+        for (int i = expresion.length() - 3  ; i < expresion.length()  ; i++){
             extension = extension + expresion.charAt(i);
         }
         
         if( extension.equalsIgnoreCase(extensiones[3]) ) resultado = true;
         
-        return resultado;
-        
+       
+        }
+         return resultado;
         
     }
     
@@ -163,7 +172,6 @@ public class Analizador {
         System.out.println("La cadena limpia es: " + entrada);
         
         for(posicionCarrete = 0 ; posicionCarrete < entrada.length() ; posicionCarrete++){
-            inicioPalabra = posicionCarrete;
             letra = entrada.charAt(posicionCarrete);
             switch(estado){
                 case 0:
@@ -187,6 +195,9 @@ public class Analizador {
                     }else if(letra == '['){
                         estado = 21;
                         valorLexema = valorLexema + letra;
+                    }else if(letra == '{'){
+                        estado = 28;
+                        valorLexema += letra;
                     }else if("w".equalsIgnoreCase(""+letra)){
                         estado = 23;
                         valorLexema = valorLexema + letra;
@@ -207,10 +218,8 @@ public class Analizador {
                         estado = 0;
                         error.add(""+letra);
                        hacerCambio(contenedor);
-                        contenedor.insertString(contenedor.getLength(),String.valueOf(letra), normalText);
-
-                        
-                        columna++;
+                       contenedor.insertString(contenedor.getLength(),String.valueOf(letra), errorStyle);
+                       columna++;
                     }
                     break;
                     
@@ -220,36 +229,39 @@ public class Analizador {
                         valorLexema = valorLexema + letra;
                     }else{
                         estado = 0;
-                        if(comprobarReservada(valorLexema, op) < 13){
+                        if(comprobarReservada(valorLexema, op) <= 13){
                             token.add(comprobarReservada(valorLexema, op));
                             lexema.add(valorLexema);
                             tipo.add("Palabra Reservada");
                             hacerCambio(contenedor);
-                            
-
                             contenedor.insertString(contenedor.getLength(),valorLexema, palabraReservada);
                             posicionFila.add(fila);
                             posicionColumna.add(columna);
                             modificarColumna(valorLexema.length());
-                            
                         }else if(comprobarExtension(valorLexema)){
                             token.add(17);
                             lexema.add(valorLexema);
                             tipo.add("Referencia");
-                           hacerCambio(contenedor);
-                                contenedor.insertString(contenedor.getLength(),valorLexema, expresionRegular);
-                            
+                            hacerCambio(contenedor);
+                            contenedor.insertString(contenedor.getLength(),valorLexema, expresionRegular);  
                             posicionFila.add(fila);
                             posicionColumna.add(columna);
+                            modificarColumna(valorLexema.length());
+                        }else if(tienePunto(valorLexema)){
+                            estado = 0;
+                            valorLexema += letra;
+                            error.add(valorLexema);
+                            hacerCambio(contenedor);
+                            contenedor.insertString(contenedor.getLength(),valorLexema, errorStyle);
+                            posicionFilaError.add(fila);
+                            posicionColumnaError.add(columna);
                             modificarColumna(valorLexema.length());
                         }else{
                             token.add(18);
                             lexema.add(valorLexema);
                             tipo.add("ID");
-                           hacerCambio(contenedor);
-                            
+                            hacerCambio(contenedor); 
                             contenedor.insertString(contenedor.getLength(),valorLexema, normalText);
-
                             posicionFila.add(fila);
                             posicionColumna.add(columna);
                             modificarColumna(valorLexema.length());
@@ -258,6 +270,985 @@ public class Analizador {
                     }
                     System.out.println(valorLexema);
                     break;
+                case 2:
+                    if(letra == '0' || letra == '1'){
+                        estado = 5;
+                        valorLexema = valorLexema + letra;
+                    }else if(Character.isDigit(letra)){
+                        estado = 18;
+                        valorLexema += letra;
+                    }else{
+                        estado = 0;
+                        token.add(19);
+                        lexema.add(valorLexema);
+                        tipo.add("Numero entero");
+                        hacerCambio(contenedor);
+                        contenedor.insertString(contenedor.getLength(),valorLexema, expresionRegular);
+                        posicionFila.add(fila);
+                        posicionColumna.add(columna);
+                        modificarColumna(valorLexema.length());
+                        posicionCarrete--;
+                        }
+                    break;
+                case 3:
+                    if(Character.isDigit(letra)){
+                        estado = 5;
+                        valorLexema += letra;
+                    }else{
+                         estado = 0;
+                        token.add(19);
+                        lexema.add(valorLexema);
+                        tipo.add("Numero entero");
+                        hacerCambio(contenedor);
+                        contenedor.insertString(contenedor.getLength(),valorLexema, expresionRegular);
+                        posicionFila.add(fila);
+                        posicionColumna.add(columna);
+                        modificarColumna(valorLexema.length());
+                        posicionCarrete--;
+                    }
+                    break;
+                case 4:
+                    if(Character.isDigit(letra) && letra != '0'){
+                        estado = 5;
+                        valorLexema += letra;
+                    }else if(letra == '0'){
+                        estado = 18;
+                        valorLexema += letra;
+                    }else{
+                         estado = 0;
+                        token.add(19);
+                        lexema.add(valorLexema);
+                        tipo.add("Numero entero");
+                        hacerCambio(contenedor);
+                        contenedor.insertString(contenedor.getLength(),valorLexema, expresionRegular);
+                        posicionFila.add(fila);
+                        posicionColumna.add(columna);
+                        modificarColumna(valorLexema.length());
+                        posicionCarrete--;
+                    }
+                    break;
+                case 5:
+                    if(letra == '/'){
+                        estado = 6;
+                        valorLexema += letra;
+                    }else if(letra == '-'){
+                        estado = 7;
+                        valorLexema += letra;
+                    }else if(letra == '0'){
+                        estado = 8;
+                        valorLexema += letra;
+                    }else if(letra == '1'){
+                        estado = 9;
+                        valorLexema += letra;
+                    }else if(Character.isDigit(letra)){
+                        estado = 19;
+                        valorLexema += letra;
+                    }else{
+                        estado = 0;
+                        token.add(19);
+                        lexema.add(valorLexema);
+                        tipo.add("Numero entero");
+                        hacerCambio(contenedor);
+                        contenedor.insertString(contenedor.getLength(),valorLexema, expresionRegular);
+                        posicionFila.add(fila);
+                        posicionColumna.add(columna);
+                        modificarColumna(valorLexema.length());
+                        posicionCarrete--;
+                    }
+                    break;
+                case 6:
+                    if(letra == '0'){
+                        estado = 8;
+                        valorLexema += letra;
+                    }else if(letra == '1'){
+                        estado = 9;
+                        valorLexema += letra;
+                    }else{
+                        estado = 0;
+                        valorLexema += letra;
+                        error.add(valorLexema);
+                        hacerCambio(contenedor);
+                        contenedor.insertString(contenedor.getLength(),valorLexema, errorStyle);
+                        posicionFilaError.add(fila);
+                        posicionColumnaError.add(columna);
+                        modificarColumna(valorLexema.length());
+                    }
+                    break;
+                case 7:
+                    if(Character.isLetter(letra)){
+                        estado = 10;
+                        valorLexema += letra;
+                    }else{
+                        estado = 0;
+                        valorLexema += letra;
+                        error.add(valorLexema);
+                        hacerCambio(contenedor);
+                        contenedor.insertString(contenedor.getLength(),valorLexema, errorStyle);
+                        posicionFilaError.add(fila);
+                        posicionColumnaError.add(columna);
+                        modificarColumna(valorLexema.length());
+                    }
+                    break;
+                case 8:
+                    if(Character.isDigit(letra) && letra != '0'){
+                        estado = 14;
+                        valorLexema += letra;
+                    }else{
+                        estado = 0;
+                        valorLexema += letra;
+                        error.add(valorLexema);
+                        hacerCambio(contenedor);
+                        contenedor.insertString(contenedor.getLength(),valorLexema, errorStyle);
+                        posicionFilaError.add(fila);
+                        posicionColumnaError.add(columna);
+                        modificarColumna(valorLexema.length());
+                    }
+                    break;
+                case 9:
+                    if(letra == '0' || letra == '1' || letra == '2'){
+                        estado = 14;
+                        valorLexema += letra;
+                    }else{
+                        estado = 0;
+                        valorLexema += letra;
+                        error.add(valorLexema);
+                        hacerCambio(contenedor);
+                        contenedor.insertString(contenedor.getLength(),valorLexema, errorStyle);
+                        posicionFilaError.add(fila);
+                        posicionColumnaError.add(columna);
+                        modificarColumna(valorLexema.length());
+                    }
+                    break;
+                case 10:
+                    if(Character.isLetter(letra)){
+                        estado = 10;
+                        valorLexema += letra;
+                    }else if(letra == '-'){
+                        estado = 11;
+                        valorLexema += letra;
+                    }else{
+                        estado = 0;
+                        valorLexema += letra;
+                        error.add(valorLexema);
+                        hacerCambio(contenedor);
+                        contenedor.insertString(contenedor.getLength(),valorLexema, errorStyle);
+                        posicionFilaError.add(fila);
+                        posicionColumnaError.add(columna);
+                        modificarColumna(valorLexema.length());
+                    }
+                    break;
+                case 11:
+                    if(Character.isDigit(letra)){
+                        estado = 12;
+                        valorLexema += letra;
+                    }else{
+                        estado = 0;
+                        valorLexema += letra;
+                        error.add(valorLexema);
+                        hacerCambio(contenedor);
+                        contenedor.insertString(contenedor.getLength(),valorLexema, errorStyle);
+                        posicionFilaError.add(fila);
+                        posicionColumnaError.add(columna);
+                        modificarColumna(valorLexema.length());
+                    }
+                    break;
+                case 12:
+                    if(Character.isDigit(letra)){
+                        estado = 13;
+                        valorLexema += letra;
+                    }else{
+                        estado = 0;
+                        valorLexema += letra;
+                        error.add(valorLexema);
+                        hacerCambio(contenedor);
+                        contenedor.insertString(contenedor.getLength(),valorLexema, errorStyle);
+                        posicionFilaError.add(fila);
+                        posicionColumnaError.add(columna);
+                        modificarColumna(valorLexema.length());
+                    }
+                    break;
+                case 13:
+                    estado = 0;
+                    token.add(14);
+                    lexema.add(valorLexema);
+                    tipo.add("Fecha");
+                    hacerCambio(contenedor);
+                    contenedor.insertString(contenedor.getLength(),valorLexema, expresionRegular);
+                    posicionFila.add(fila);
+                    posicionColumna.add(columna);
+                    modificarColumna(valorLexema.length());
+                    posicionCarrete--;
+                    break;
+                case 14:
+                    if(letra == '/'){
+                        estado = 15;
+                        valorLexema += letra;
+                    }else if(Character.isDigit(letra)){
+                        estado = 16;
+                        valorLexema += letra;
+                    }else{
+                        estado = 0;
+                        valorLexema += letra;
+                        error.add(valorLexema);
+                        hacerCambio(contenedor);
+                        contenedor.insertString(contenedor.getLength(),valorLexema, errorStyle);
+                        posicionFilaError.add(fila);
+                        posicionColumnaError.add(columna);
+                        modificarColumna(valorLexema.length());
+                    }
+                    break;
+                case 15:
+                    if(Character.isDigit(letra)){
+                        estado = 11;
+                        valorLexema += letra;
+                    }else{
+                        estado = 0;
+                        valorLexema += letra;
+                        error.add(valorLexema);
+                        hacerCambio(contenedor);
+                        contenedor.insertString(contenedor.getLength(),valorLexema, errorStyle);
+                        posicionFilaError.add(fila);
+                        posicionColumnaError.add(columna);
+                        modificarColumna(valorLexema.length());
+                    }
+                    break;
+                case 16:
+                    if(Character.isDigit(letra)){
+                        estado = 11;
+                        valorLexema += letra;
+                    }else{
+                        estado = 0;
+                        valorLexema += letra;
+                        error.add(valorLexema);
+                        hacerCambio(contenedor);
+                        contenedor.insertString(contenedor.getLength(),valorLexema, errorStyle);
+                        posicionFilaError.add(fila);
+                        posicionColumnaError.add(columna);
+                        modificarColumna(valorLexema.length());
+                    }
+                    break;
+                case 17:
+                    if(Character.isDigit(letra) && letra != '0' && letra != '1'
+                            && letra != '2' && letra != '3'){
+                        estado = 18;
+                        valorLexema += letra;
+                    }else{
+                        estado = 0;
+                        token.add(19);
+                        lexema.add(valorLexema);
+                        tipo.add("Numero entero");
+                        hacerCambio(contenedor);
+                        contenedor.insertString(contenedor.getLength(),valorLexema, expresionRegular);
+                        posicionFila.add(fila);
+                        posicionColumna.add(columna);
+                        modificarColumna(valorLexema.length());
+                        posicionCarrete--;
+                    }
+                    break;
+                case 18:
+                    if(Character.isDigit(letra)){
+                        estado = 19;
+                        valorLexema += letra;
+                    }else{
+                        estado = 0;
+                        token.add(19);
+                        lexema.add(valorLexema);
+                        tipo.add("Numero entero");
+                        hacerCambio(contenedor);
+                        contenedor.insertString(contenedor.getLength(),valorLexema, expresionRegular);
+                        posicionFila.add(fila);
+                        posicionColumna.add(columna);
+                        modificarColumna(valorLexema.length());
+                        posicionCarrete--;
+                    }
+                    break;
+                case 19:
+                    if(Character.isDigit(letra)){
+                        estado = 20;
+                        valorLexema += letra;
+                    }else{
+                        estado = 0;
+                        token.add(19);
+                        lexema.add(valorLexema);
+                        tipo.add("Numero entero");
+                        hacerCambio(contenedor);
+                        contenedor.insertString(contenedor.getLength(),valorLexema, expresionRegular);
+                        posicionFila.add(fila);
+                        posicionColumna.add(columna);
+                        modificarColumna(valorLexema.length());
+                        posicionCarrete--;
+                    }
+                    break;
+                case 20:
+                    if(Character.isDigit(letra)){
+                        estado = 17;
+                        valorLexema += letra;
+                    }else{
+                        estado = 0;
+                        token.add(15);
+                        valorLexema += letra; 
+                        lexema.add(valorLexema);
+                        tipo.add("Año");
+                        hacerCambio(contenedor);
+                        contenedor.insertString(contenedor.getLength(),valorLexema, expresionRegular);
+                        posicionFila.add(fila);
+                        posicionColumna.add(columna);
+                        modificarColumna(valorLexema.length());
+                    }
+                    break;
+                case 21:
+                    if(letra == ']'){
+                        estado = 22;
+                        valorLexema += letra;
+                    }else{
+                        if(posicionCarrete == entrada.length() -1){
+                            estado = 0;
+                            valorLexema += letra;
+                            error.add(valorLexema);
+                            hacerCambio(contenedor);
+                            contenedor.insertString(contenedor.getLength(),valorLexema, errorStyle);
+                            posicionFilaError.add(fila);
+                            posicionColumnaError.add(columna);
+                            modificarColumna(valorLexema.length());
+                        }
+                        estado = 21;
+                        valorLexema += letra;
+                    }
+                    break;
+                case 22:
+                    estado = 0;
+                    token.add(16);
+                    valorLexema += letra; 
+                    lexema.add(valorLexema);
+                    tipo.add("Referencia");
+                    hacerCambio(contenedor);
+                    contenedor.insertString(contenedor.getLength(),valorLexema, expresionRegular);
+                    posicionFila.add(fila);
+                    posicionColumna.add(columna);
+                    modificarColumna(valorLexema.length());
+                    break;
+                case 23:
+                    if(letra == 'w' || letra == 'W'){
+                        estado = 24;
+                        valorLexema += letra;
+                    }else if(Character.isLetter(letra) || Character.isDigit(letra)){
+                        valorLexema += letra;
+                        estado = 1;
+                    }else{
+                        estado = 0;
+                        token.add(18);
+                        lexema.add(valorLexema);
+                        tipo.add("ID");
+                        hacerCambio(contenedor); 
+                        contenedor.insertString(contenedor.getLength(),valorLexema, normalText);
+                        posicionFila.add(fila);
+                        posicionColumna.add(columna);
+                        modificarColumna(valorLexema.length());
+                        posicionCarrete--;
+                    }
+                    break;
+                case 24:
+                    if(letra == 'w' || letra == 'W'){
+                        estado = 25;
+                        valorLexema += letra;
+                    }else if(Character.isLetter(letra) || Character.isDigit(letra)){
+                        valorLexema += letra;
+                        estado = 1;
+                    }else{
+                        estado = 0;
+                        token.add(18);
+                        lexema.add(valorLexema);
+                        tipo.add("ID");
+                        hacerCambio(contenedor); 
+                        contenedor.insertString(contenedor.getLength(),valorLexema, normalText);
+                        posicionFila.add(fila);
+                        posicionColumna.add(columna);
+                        modificarColumna(valorLexema.length());
+                        posicionCarrete--;
+                    }
+                    break;
+                case 25:
+                    if(letra == '.'){
+                        estado = 26;
+                        valorLexema += letra;
+                    }else if(Character.isLetter(letra) || Character.isDigit(letra)){
+                        valorLexema += letra;
+                        estado = 1;
+                    }else{
+                        estado = 0;
+                        token.add(18);
+                        lexema.add(valorLexema);
+                        tipo.add("ID");
+                        hacerCambio(contenedor); 
+                        contenedor.insertString(contenedor.getLength(),valorLexema, normalText);
+                        posicionFila.add(fila);
+                        posicionColumna.add(columna);
+                        modificarColumna(valorLexema.length());
+                        posicionCarrete--;
+                    }
+                    break;
+                case 26:
+                    if(Character.isLetter(letra) || Character.isDigit(letra)){
+                        estado = 26;
+                        valorLexema += letra;
+                    }else if(letra == '.'){
+                        estado = 27;
+                        valorLexema += letra;
+                    }else{
+                        estado = 0;
+                        valorLexema += letra;
+                        error.add(valorLexema);
+                        hacerCambio(contenedor);
+                        contenedor.insertString(contenedor.getLength(),valorLexema, errorStyle);
+                        posicionFilaError.add(fila);
+                        posicionColumnaError.add(columna);
+                        modificarColumna(valorLexema.length());
+                    }
+                    break;
+                case 27:
+                    if(Character.isLetter(letra)){
+                        estado = 1;
+                        valorLexema += letra;
+                    }else{
+                        estado = 0;
+                        valorLexema += letra;
+                        error.add(valorLexema);
+                        hacerCambio(contenedor);
+                        contenedor.insertString(contenedor.getLength(),valorLexema, errorStyle);
+                        posicionFilaError.add(fila);
+                        posicionColumnaError.add(columna);
+                        modificarColumna(valorLexema.length());
+                    }
+                    break;
+                case 28:
+                    if(letra == 32 || Character.isDigit(letra) || Character.isLetter(letra)){
+                        if(posicionCarrete == entrada.length() - 1){
+                            estado = 0;
+                            valorLexema += letra;
+                            error.add(valorLexema);
+                            hacerCambio(contenedor);
+                            contenedor.insertString(contenedor.getLength(),valorLexema, errorStyle);
+                            posicionFilaError.add(fila);
+                            posicionColumnaError.add(columna);
+                            modificarColumna(valorLexema.length());
+                        }else{
+                            estado = 28;
+                            valorLexema += letra;
+                        }
+                    }else if(letra == ';'){
+                        estado = 29;
+                        valorLexema += letra;
+                    }else{
+                        estado = 0;
+                        valorLexema += letra;
+                        error.add(valorLexema);
+                        hacerCambio(contenedor);
+                        contenedor.insertString(contenedor.getLength(),valorLexema, errorStyle);
+                        posicionFilaError.add(fila);
+                        posicionColumnaError.add(columna);
+                        modificarColumna(valorLexema.length());
+                    }
+                    break;
+                case 29:
+                    if(letra == 32 || Character.isDigit(letra) || Character.isLetter(letra)){
+                        if(posicionCarrete == entrada.length() - 1){
+                            estado = 0;
+                            valorLexema += letra;
+                            error.add(valorLexema);
+                            hacerCambio(contenedor);
+                            contenedor.insertString(contenedor.getLength(),valorLexema, errorStyle);
+                            posicionFilaError.add(fila);
+                            posicionColumnaError.add(columna);
+                            modificarColumna(valorLexema.length());
+                        }else{
+                            estado = 29;
+                            valorLexema += letra;
+                        }
+                    }else if(letra == ';'){
+                        estado = 30;
+                        valorLexema += letra;
+                    }else if(letra == '}'){
+                        estado = 31;
+                        valorLexema += letra;
+                    }
+                    else{
+                        estado = 0;
+                        valorLexema += letra;
+                        error.add(valorLexema);
+                        hacerCambio(contenedor);
+                        contenedor.insertString(contenedor.getLength(),valorLexema, errorStyle);
+                        posicionFilaError.add(fila);
+                        posicionColumnaError.add(columna);
+                        modificarColumna(valorLexema.length());
+                    }
+                    break;
+                case 30:
+                    if(letra == 32 || Character.isDigit(letra) || Character.isLetter(letra)){
+                        if(posicionCarrete == entrada.length() - 1){
+                            estado = 0;
+                            valorLexema += letra;
+                            error.add(valorLexema);
+                            hacerCambio(contenedor);
+                            contenedor.insertString(contenedor.getLength(),valorLexema, errorStyle);
+                            posicionFilaError.add(fila);
+                            posicionColumnaError.add(columna);
+                            modificarColumna(valorLexema.length());
+                        }else{
+                            estado = 30;
+                            valorLexema += letra;
+                        }
+                    }else if(letra == ';'){
+                        estado = 32;
+                        valorLexema += letra;
+                    }else if(letra == '}'){
+                        estado = 31;
+                        valorLexema += letra;
+                    }
+                    else{
+                        estado = 0;
+                        valorLexema += letra;
+                        error.add(valorLexema);
+                        hacerCambio(contenedor);
+                        contenedor.insertString(contenedor.getLength(),valorLexema, errorStyle);
+                        posicionFilaError.add(fila);
+                        posicionColumnaError.add(columna);
+                        modificarColumna(valorLexema.length());
+                    }
+                    break;
+                case 32:
+                    if(letra == 32 || Character.isDigit(letra) || Character.isLetter(letra)){
+                        if(posicionCarrete == entrada.length() - 1){
+                            estado = 0;
+                            valorLexema += letra;
+                            error.add(valorLexema);
+                            hacerCambio(contenedor);
+                            contenedor.insertString(contenedor.getLength(),valorLexema, errorStyle);
+                            posicionFilaError.add(fila);
+                            posicionColumnaError.add(columna);
+                            modificarColumna(valorLexema.length());
+                        }else{
+                            estado = 32;
+                            valorLexema += letra;
+                        }
+                    }else if(letra == '}'){
+                        estado = 31;
+                        valorLexema += letra;
+                    }
+                    else{
+                        estado = 0;
+                        valorLexema += letra;
+                        error.add(valorLexema);
+                        hacerCambio(contenedor);
+                        contenedor.insertString(contenedor.getLength(),valorLexema, errorStyle);
+                        posicionFilaError.add(fila);
+                        posicionColumnaError.add(columna);
+                        modificarColumna(valorLexema.length());
+                    }
+                    break;
+                case 31:
+                    estado = 0;
+                    token.add(16); 
+                    lexema.add(valorLexema);
+                    tipo.add("Referencia");
+                    hacerCambio(contenedor);
+                    contenedor.insertString(contenedor.getLength(),valorLexema, expresionRegular);
+                    posicionFila.add(fila);
+                    posicionColumna.add(columna);
+                    modificarColumna(valorLexema.length());
+                    posicionCarrete--;
+                    break;
+                case 33:
+                    if(letra == 'n' || letra == 'N'){
+                        estado = 34;
+                        valorLexema += letra;
+                    }else if(Character.isLetter(letra) || Character.isDigit(letra)){
+                        estado = 1;
+                        valorLexema += letra;
+                    }else{
+                        estado = 0;
+                        token.add(18);
+                        lexema.add(valorLexema);
+                        tipo.add("ID");
+                        hacerCambio(contenedor); 
+                        contenedor.insertString(contenedor.getLength(),valorLexema, normalText);
+                        posicionFila.add(fila);
+                        posicionColumna.add(columna);
+                        modificarColumna(valorLexema.length());
+                        posicionCarrete--;
+                    }
+                    break;
+                case 34:
+                    if(letra == 't' || letra == 'T'){
+                        estado = 35;
+                        valorLexema += letra;
+                    }else if(Character.isLetter(letra) || Character.isDigit(letra)){
+                        estado = 1;
+                        valorLexema += letra;
+                    }else{
+                        estado = 0;
+                        token.add(18);
+                        lexema.add(valorLexema);
+                        tipo.add("ID");
+                        hacerCambio(contenedor); 
+                        contenedor.insertString(contenedor.getLength(),valorLexema, normalText);
+                        posicionFila.add(fila);
+                        posicionColumna.add(columna);
+                        modificarColumna(valorLexema.length());
+                        posicionCarrete--;
+                    }
+                    break;
+                case 35:
+                    if(letra == 'e' || letra == 'E'){
+                        estado = 36;
+                        valorLexema += letra;
+                    }else if(Character.isLetter(letra) || Character.isDigit(letra)){
+                        estado = 1;
+                        valorLexema += letra;
+                    }else{
+                        estado = 0;
+                        token.add(18);
+                        lexema.add(valorLexema);
+                        tipo.add("ID");
+                        hacerCambio(contenedor); 
+                        contenedor.insertString(contenedor.getLength(),valorLexema, normalText);
+                        posicionFila.add(fila);
+                        posicionColumna.add(columna);
+                        modificarColumna(valorLexema.length());
+                        posicionCarrete--;
+                    }
+                    break;
+                case 36:
+                    if(letra == 's' || letra == 'S'){
+                        estado = 37;
+                        valorLexema += letra;
+                    }else if(Character.isLetter(letra) || Character.isDigit(letra)){
+                        estado = 1;
+                        valorLexema += letra;
+                    }else{
+                        estado = 0;
+                        token.add(18);
+                        lexema.add(valorLexema);
+                        tipo.add("ID");
+                        hacerCambio(contenedor); 
+                        contenedor.insertString(contenedor.getLength(),valorLexema, normalText);
+                        posicionFila.add(fila);
+                        posicionColumna.add(columna);
+                        modificarColumna(valorLexema.length());
+                        posicionCarrete--;
+                    }
+                    break;
+                case 37:
+                    if(letra == 't' || letra == 'T'){
+                        estado = 38;
+                        valorLexema += letra;
+                    }else if(Character.isLetter(letra) || Character.isDigit(letra)){
+                        estado = 1;
+                        valorLexema += letra;
+                    }else{
+                        estado = 0;
+                        token.add(18);
+                        lexema.add(valorLexema);
+                        tipo.add("ID");
+                        hacerCambio(contenedor); 
+                        contenedor.insertString(contenedor.getLength(),valorLexema, normalText);
+                        posicionFila.add(fila);
+                        posicionColumna.add(columna);
+                        modificarColumna(valorLexema.length());
+                        posicionCarrete--;
+                    }
+                    break;
+                case 38:
+                    if(letra == 'i' || letra == 'I'){
+                        estado = 39;
+                        valorLexema += letra;
+                    }else if(Character.isLetter(letra) || Character.isDigit(letra)){
+                        estado = 1;
+                        valorLexema += letra;
+                    }else{
+                        estado = 0;
+                        token.add(18);
+                        lexema.add(valorLexema);
+                        tipo.add("ID");
+                        hacerCambio(contenedor); 
+                        contenedor.insertString(contenedor.getLength(),valorLexema, normalText);
+                        posicionFila.add(fila);
+                        posicionColumna.add(columna);
+                        modificarColumna(valorLexema.length());
+                        posicionCarrete--;
+                    }
+                    break;
+                case 39:
+                    if(letra == 'n' || letra == 'N'){
+                        estado = 40;
+                        valorLexema += letra;
+                    }else if(Character.isLetter(letra) || Character.isDigit(letra)){
+                        estado = 1;
+                        valorLexema += letra;
+                    }else{
+                        estado = 0;
+                        token.add(18);
+                        lexema.add(valorLexema);
+                        tipo.add("ID");
+                        hacerCambio(contenedor); 
+                        contenedor.insertString(contenedor.getLength(),valorLexema, normalText);
+                        posicionFila.add(fila);
+                        posicionColumna.add(columna);
+                        modificarColumna(valorLexema.length());
+                        posicionCarrete--;
+                    }
+                    break;
+                case 40:
+                    if(letra == 'o' || letra == 'O'){
+                        estado = 41;
+                        valorLexema += letra;
+                    }else if(Character.isLetter(letra) || Character.isDigit(letra)){
+                        estado = 1;
+                        valorLexema += letra;
+                    }else{
+                        estado = 0;
+                        token.add(18);
+                        lexema.add(valorLexema);
+                        tipo.add("ID");
+                        hacerCambio(contenedor); 
+                        contenedor.insertString(contenedor.getLength(),valorLexema, normalText);
+                        posicionFila.add(fila);
+                        posicionColumna.add(columna);
+                        modificarColumna(valorLexema.length());
+                        posicionCarrete--;
+                    }
+                    break;
+                case 41:
+                    if(letra == 32){
+                        estado = 42;
+                        valorLexema += letra;
+                    }else if(Character.isLetter(letra) || Character.isDigit(letra)){
+                        estado = 1;
+                        valorLexema += letra;
+                    }else{
+                        estado = 0;
+                        token.add(18);
+                        lexema.add(valorLexema);
+                        tipo.add("ID");
+                        hacerCambio(contenedor); 
+                        contenedor.insertString(contenedor.getLength(),valorLexema, normalText);
+                        posicionFila.add(fila);
+                        posicionColumna.add(columna);
+                        modificarColumna(valorLexema.length());
+                        posicionCarrete--;
+                    }
+                    break;
+                case 42:
+                    if(letra == 'g' || letra == 'G'){
+                        estado = 43;
+                        valorLexema += letra;
+                    }else if(letra == 'd' || letra == 'D'){
+                        estado = 48;
+                        valorLexema += letra;
+                    }else{
+                        estado = 0;
+                        valorLexema += letra;
+                        error.add(valorLexema);
+                        hacerCambio(contenedor);
+                        contenedor.insertString(contenedor.getLength(),valorLexema, errorStyle);
+                        posicionFilaError.add(fila);
+                        posicionColumnaError.add(columna);
+                        modificarColumna(valorLexema.length());
+                    }
+                    break;
+                case 43:
+                    if(letra == 'r' || letra == 'G'){
+                        estado = 44;
+                        valorLexema += letra;
+                    }else{
+                        estado = 0;
+                        valorLexema += letra;
+                        error.add(valorLexema);
+                        hacerCambio(contenedor);
+                        contenedor.insertString(contenedor.getLength(),valorLexema, errorStyle);
+                        posicionFilaError.add(fila);
+                        posicionColumnaError.add(columna);
+                        modificarColumna(valorLexema.length());
+                    }
+                    break;
+                case 44:
+                    if(letra == 'u' || letra == 'U'){
+                        estado = 45;
+                        valorLexema += letra;
+                    }else{
+                        estado = 0;
+                        valorLexema += letra;
+                        error.add(valorLexema);
+                        hacerCambio(contenedor);
+                        contenedor.insertString(contenedor.getLength(),valorLexema, errorStyle);
+                        posicionFilaError.add(fila);
+                        posicionColumnaError.add(columna);
+                        modificarColumna(valorLexema.length());
+                    }
+                    break;
+                case 45:
+                    if(letra == 'e' || letra == 'E'){
+                        estado = 46;
+                        valorLexema += letra;
+                    }else{
+                        estado = 0;
+                        valorLexema += letra;
+                        error.add(valorLexema);
+                        hacerCambio(contenedor);
+                        contenedor.insertString(contenedor.getLength(),valorLexema, errorStyle);
+                        posicionFilaError.add(fila);
+                        posicionColumnaError.add(columna);
+                        modificarColumna(valorLexema.length());
+                    }
+                    break;
+                case 46:
+                    if(letra == 's' || letra == 'S'){
+                        estado = 47;
+                        valorLexema += letra;
+                    }else{
+                        estado = 0;
+                        valorLexema += letra;
+                        error.add(valorLexema);
+                        hacerCambio(contenedor);
+                        contenedor.insertString(contenedor.getLength(),valorLexema, errorStyle);
+                        posicionFilaError.add(fila);
+                        posicionColumnaError.add(columna);
+                        modificarColumna(valorLexema.length());
+                    }
+                    break;
+                case 47:
+                    if(letra == 'o' || letra == 'O'){
+                        estado = 55;
+                        valorLexema += letra;
+                    }else{
+                        estado = 0;
+                        valorLexema += letra;
+                        error.add(valorLexema);
+                        hacerCambio(contenedor);
+                        contenedor.insertString(contenedor.getLength(),valorLexema, errorStyle);
+                        posicionFilaError.add(fila);
+                        posicionColumnaError.add(columna);
+                        modificarColumna(valorLexema.length());
+                    }
+                    break;
+                case 55:
+                    estado = 0;
+                    token.add(20);
+                    lexema.add(valorLexema);
+                    tipo.add("Palabra Reservada");
+                    hacerCambio(contenedor);
+                    contenedor.insertString(contenedor.getLength(),valorLexema, palabraReservada);
+                    posicionFila.add(fila);
+                    posicionColumna.add(columna);
+                    modificarColumna(valorLexema.length());
+                    posicionCarrete--;
+                    break;
+                case 48:
+                    if(letra == 'e' || letra == 'E'){
+                        estado = 49;
+                        valorLexema += letra;
+                    }else{
+                        estado = 0;
+                        valorLexema += letra;
+                        error.add(valorLexema);
+                        hacerCambio(contenedor);
+                        contenedor.insertString(contenedor.getLength(),valorLexema, errorStyle);
+                        posicionFilaError.add(fila);
+                        posicionColumnaError.add(columna);
+                        modificarColumna(valorLexema.length());
+                    }
+                    break;
+                case 49:
+                    if(letra == 'l' || letra == 'L'){
+                        estado = 50;
+                        valorLexema += letra;
+                    }else{
+                        estado = 0;
+                        valorLexema += letra;
+                        error.add(valorLexema);
+                        hacerCambio(contenedor);
+                        contenedor.insertString(contenedor.getLength(),valorLexema, errorStyle);
+                        posicionFilaError.add(fila);
+                        posicionColumnaError.add(columna);
+                        modificarColumna(valorLexema.length());
+                    }
+                    break;
+                case 50:
+                    if(letra == 'g' || letra == 'G'){
+                        estado = 51;
+                        valorLexema += letra;
+                    }else{
+                        estado = 0;
+                        valorLexema += letra;
+                        error.add(valorLexema);
+                        hacerCambio(contenedor);
+                        contenedor.insertString(contenedor.getLength(),valorLexema, errorStyle);
+                        posicionFilaError.add(fila);
+                        posicionColumnaError.add(columna);
+                        modificarColumna(valorLexema.length());
+                    }
+                    break;
+                case 51:
+                    if(letra == 'a' || letra == 'A'){
+                        estado = 52;
+                        valorLexema += letra;
+                    }else{
+                        estado = 0;
+                        valorLexema += letra;
+                        error.add(valorLexema);
+                        hacerCambio(contenedor);
+                        contenedor.insertString(contenedor.getLength(),valorLexema, errorStyle);
+                        posicionFilaError.add(fila);
+                        posicionColumnaError.add(columna);
+                        modificarColumna(valorLexema.length());
+                    }
+                    break;
+                case 52:
+                    if(letra == 'd' || letra == 'D'){
+                        estado = 53;
+                        valorLexema += letra;
+                    }else{
+                        estado = 0;
+                        valorLexema += letra;
+                        error.add(valorLexema);
+                        hacerCambio(contenedor);
+                        contenedor.insertString(contenedor.getLength(),valorLexema, errorStyle);
+                        posicionFilaError.add(fila);
+                        posicionColumnaError.add(columna);
+                        modificarColumna(valorLexema.length());
+                    }
+                    break;
+                case 53:
+                    if(letra == 'o' || letra == 'O'){
+                        estado = 49;
+                        valorLexema += letra;
+                    }else{
+                        estado = 0;
+                        valorLexema += letra;
+                        error.add(valorLexema);
+                        hacerCambio(contenedor);
+                        contenedor.insertString(contenedor.getLength(),valorLexema, errorStyle);
+                        posicionFilaError.add(fila);
+                        posicionColumnaError.add(columna);
+                        modificarColumna(valorLexema.length());
+                    }
+                    break;
+                case 54:
+                    estado = 0;
+                    token.add(20);
+                    lexema.add(valorLexema);
+                    tipo.add("Palabra Reservada");
+                    hacerCambio(contenedor);
+                    contenedor.insertString(contenedor.getLength(),valorLexema, palabraReservada);
+                    posicionFila.add(fila);
+                    posicionColumna.add(columna);
+                    modificarColumna(valorLexema.length());
+                    posicionCarrete--;
+                    break;
+                
+                default:
+                    System.err.println("Error de Programacion, ese estado no existe");
+                    estado = 0;
+                    
             }
         }
         imprimirResultados();
@@ -368,6 +1359,14 @@ public class Analizador {
              fila++;
              columna = 1;
           }            
+    }
+
+    private boolean tienePunto(String valorLexema) {
+        boolean retorno = false;
+        if(valorLexema.lastIndexOf(".") > 0){
+            retorno = true;
+        }
+        return retorno;
     }
 
     
