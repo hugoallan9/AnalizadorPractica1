@@ -124,7 +124,7 @@ public class Analizador {
         boolean resultado = false;
         String extension = "";
         
-        if(expresion.length() >= 3){
+        if(expresion.length() > 3){
         try{
             for (int i = expresion.length() - 4  ; i < expresion.length()  ; i++){
                 extension = extension + expresion.charAt(i);
@@ -1018,7 +1018,7 @@ public class Analizador {
                     }
                     break;
                 case 41:
-                    if(letra == 32){
+                    if(letra == 32 && (op == 0 || op == 2)){
                         estado = 42;
                         valorLexema += letra;
                     }else if(Character.isLetter(letra) || Character.isDigit(letra)){
@@ -1219,7 +1219,7 @@ public class Analizador {
                     break;
                 case 53:
                     if(letra == 'o' || letra == 'O'){
-                        estado = 49;
+                        estado = 54;
                         valorLexema += letra;
                     }else{
                         estado = 0;
@@ -1269,7 +1269,7 @@ public class Analizador {
     }
 
     private int comprobarReservada(String valorLexema, int op){
-        int  respuesta = 0;
+        int  respuesta = 50;
         cicloReserva:
         switch(op){
             case 0:
@@ -1279,6 +1279,8 @@ public class Analizador {
                         break cicloReserva;
                     }
                 }
+                break;
+
 
             case 1:
                 for(int i = 0; i < 7; i++){
@@ -1287,6 +1289,8 @@ public class Analizador {
                        break cicloReserva;
                     }
                 }
+                break;
+
                 
             case 2:
                 for(int i =0 ; i < 4 ; i++){
@@ -1302,6 +1306,7 @@ public class Analizador {
                        break cicloReserva;
                     }
                 }
+
                 
             default:
                 System.err.println(valorLexema + " no es una palabra reservada");
@@ -1324,7 +1329,8 @@ public class Analizador {
     }
 
     private String limpiarCadena(String entrada) {
-        return entrada.replaceAll("[\n\r\t]", "") + " ";
+        return entrada.replaceAll("[\n\r\t]", "") + " " + " ";
+        
        
     }
 
@@ -1367,6 +1373,38 @@ public class Analizador {
             retorno = true;
         }
         return retorno;
+    }
+    
+        public ArrayList<String> getError() {
+        return error;
+    }
+
+    public ArrayList<String> getLexema() {
+        return lexema;
+    }
+
+    public ArrayList<String> getTipo() {
+        return tipo;
+    }
+
+    public ArrayList<Integer> getPosicionFila() {
+        return posicionFila;
+    }
+
+    public ArrayList<Integer> getPosicionColumna() {
+        return posicionColumna;
+    }
+
+    public ArrayList<Integer> getPosicionFilaError() {
+        return posicionFilaError;
+    }
+
+    public ArrayList<Integer> getPosicionColumnaError() {
+        return posicionColumnaError;
+    }
+
+    public ArrayList<Integer> getToken() {
+        return token;
     }
 
     

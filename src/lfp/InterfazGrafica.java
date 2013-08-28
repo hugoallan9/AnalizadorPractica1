@@ -4,11 +4,23 @@
  */
 package lfp;
 
+import java.awt.Image;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.Action;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultEditorKit;
 import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.Document;
 import javax.swing.text.JTextComponent;
@@ -23,8 +35,17 @@ public class InterfazGrafica extends javax.swing.JFrame {
     /**
      * Creates new form InterfazGrafica
      */
+    
+    private String ruta = null;
+    private String ruta1 = null;
+    private String ruta2 = null;
+    private String rutaImagen[];
+    private Document doc = new DefaultStyledDocument();
+    private Analizador ana;
     public InterfazGrafica() {
         initComponents();
+        inicializarRutas();
+        
     }
 
     /**
@@ -48,6 +69,19 @@ public class InterfazGrafica extends javax.swing.JFrame {
         fila = new javax.swing.JTextField();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
+        imagen2 = new javax.swing.JLabel();
+        imagen1 = new javax.swing.JLabel();
+        imagen4 = new javax.swing.JLabel();
+        imagen3 = new javax.swing.JLabel();
+        imagen6 = new javax.swing.JLabel();
+        imagen5 = new javax.swing.JLabel();
+        jMenuBar1 = new javax.swing.JMenuBar();
+        jMenu1 = new javax.swing.JMenu();
+        abrirItem = new javax.swing.JMenuItem();
+        guardarItem = new javax.swing.JMenuItem();
+        limpiarItem = new javax.swing.JMenuItem();
+        salirItem = new javax.swing.JMenuItem();
+        edicionMn = new javax.swing.JMenu();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -87,6 +121,72 @@ public class InterfazGrafica extends javax.swing.JFrame {
 
         jLabel2.setText("fila");
 
+        imagen2.setText("Imagen 1");
+
+        imagen1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Imagenes/boca.jpg"))); // NOI18N
+        imagen1.setText("Imagen 1");
+
+        imagen4.setText("Imagen 1");
+
+        imagen3.setText("Imagen 1");
+
+        imagen6.setText("Imagen 1");
+
+        imagen5.setText("Imagen 1");
+
+        jMenu1.setText("Archivo");
+
+        abrirItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O, java.awt.event.InputEvent.CTRL_MASK));
+        abrirItem.setText("Abrir");
+        abrirItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                abrirItemActionPerformed(evt);
+            }
+        });
+        jMenu1.add(abrirItem);
+
+        guardarItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_G, java.awt.event.InputEvent.CTRL_MASK));
+        guardarItem.setText("Guardar");
+        guardarItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                guardarItemActionPerformed(evt);
+            }
+        });
+        jMenu1.add(guardarItem);
+
+        limpiarItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_C, java.awt.event.InputEvent.CTRL_MASK));
+        limpiarItem.setText("Limpiar Area");
+        limpiarItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                limpiarItemActionPerformed(evt);
+            }
+        });
+        jMenu1.add(limpiarItem);
+
+        salirItem.setText("Salir");
+        salirItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                salirItemActionPerformed(evt);
+            }
+        });
+        jMenu1.add(salirItem);
+
+        jMenuBar1.add(jMenu1);
+
+        Action action = getActionByName(DefaultEditorKit.cutAction);
+        action.putValue(Action.NAME, "Cortar");
+        edicionMn.add(action);
+        Action action1 = getActionByName(DefaultEditorKit.copyAction);
+        action1.putValue(Action.NAME, "Copiar");
+        edicionMn.add(action1);
+        Action action2 = getActionByName(DefaultEditorKit.pasteAction);
+        action2.putValue(Action.NAME, "Pegar");
+        edicionMn.add(action2);
+        edicionMn.setText("Edicion");
+        jMenuBar1.add(edicionMn);
+
+        setJMenuBar(jMenuBar1);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -96,32 +196,63 @@ public class InterfazGrafica extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addGap(28, 28, 28)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(botonAnalizar)
-                            .addComponent(tab, javax.swing.GroupLayout.PREFERRED_SIZE, 462, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(tab, javax.swing.GroupLayout.PREFERRED_SIZE, 462, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(botonAnalizar)))
                     .addGroup(layout.createSequentialGroup()
                         .addContainerGap()
                         .addComponent(jLabel1)
                         .addGap(11, 11, 11)
-                        .addComponent(columna, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(columna, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel2)
                         .addGap(1, 1, 1)
-                        .addComponent(fila, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(124, Short.MAX_VALUE))
+                        .addComponent(fila, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 41, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(imagen1, javax.swing.GroupLayout.PREFERRED_SIZE, 116, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(43, 43, 43)
+                        .addComponent(imagen2, javax.swing.GroupLayout.PREFERRED_SIZE, 116, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(imagen3, javax.swing.GroupLayout.PREFERRED_SIZE, 116, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(43, 43, 43)
+                        .addComponent(imagen4, javax.swing.GroupLayout.PREFERRED_SIZE, 116, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(imagen5, javax.swing.GroupLayout.PREFERRED_SIZE, 116, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(43, 43, 43)
+                        .addComponent(imagen6, javax.swing.GroupLayout.PREFERRED_SIZE, 116, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(79, Short.MAX_VALUE)
-                .addComponent(botonAnalizar)
-                .addGap(3, 3, 3)
-                .addComponent(tab, javax.swing.GroupLayout.PREFERRED_SIZE, 199, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(49, 49, 49)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(imagen1, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(imagen2, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(columna, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(fila, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel1)
-                    .addComponent(jLabel2)))
+                    .addComponent(imagen3, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(imagen4, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(40, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(botonAnalizar)
+                        .addGap(30, 30, 30)
+                        .addComponent(tab, javax.swing.GroupLayout.PREFERRED_SIZE, 199, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(columna, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(fila, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel1)
+                            .addComponent(jLabel2)))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(imagen5, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(imagen6, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addContainerGap())))
         );
 
         pack();
@@ -129,9 +260,9 @@ public class InterfazGrafica extends javax.swing.JFrame {
 
     private void botonAnalizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonAnalizarActionPerformed
         // TODO add your handling code here:
+        limpiarLabels();
         System.out.println(tab.getSelectedIndex());
-        Analizador ana = new Analizador(tab.getSelectedIndex());
-        Document doc = new DefaultStyledDocument();
+        ana = new Analizador(tab.getSelectedIndex());
         switch(tab.getSelectedIndex()){
             case 0:
             try {
@@ -140,6 +271,7 @@ public class InterfazGrafica extends javax.swing.JFrame {
                 Logger.getLogger(InterfazGrafica.class.getName()).log(Level.SEVERE, null, ex);
             }
             tabDigestivo.setDocument(doc);
+            imagen2.setIcon(null);
                 break;
             case 1:
                 try {
@@ -159,7 +291,89 @@ public class InterfazGrafica extends javax.swing.JFrame {
                 break;
                
         }
+        procesoFinal();
     }//GEN-LAST:event_botonAnalizarActionPerformed
+
+    private void abrirItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_abrirItemActionPerformed
+        // TODO add your handling code here:
+        JFileChooser fc = new JFileChooser();
+        FileNameExtensionFilter filtro  = new FileNameExtensionFilter("Archivo de Texto para lfp", "body");
+        fc.setFileFilter(filtro);
+        int seleccion = fc.showOpenDialog(this);
+        if(seleccion == JFileChooser.APPROVE_OPTION){
+            System.out.println(ruta = fc.getSelectedFile().getPath());
+            Lectura lectora = new Lectura(ruta);
+            try {
+                doc.insertString(doc.getLength(), lectora.leer() , null);
+            } catch (BadLocationException ex) {
+                Logger.getLogger(InterfazGrafica.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            switch(tab.getSelectedIndex()){
+                case 0:
+                    tabDigestivo.setDocument(doc);
+                    break;
+                case 1:
+                    tabOseo.setDocument(doc);
+                    break;
+                case 2:
+                    tabGeneral.setDocument(doc);
+                    break;
+            }
+        }
+    }//GEN-LAST:event_abrirItemActionPerformed
+
+    private void guardarItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_guardarItemActionPerformed
+        // TODO add your handling code here:
+        if(ruta == null){
+            JFileChooser fc = new JFileChooser();
+            FileNameExtensionFilter filtro  = new FileNameExtensionFilter("Archivo de Texto para lfp", "body");
+            fc.setFileFilter(filtro);
+            int seleccion = fc.showOpenDialog(this);
+            if(seleccion == JFileChooser.APPROVE_OPTION){
+                try {
+                    ruta = fc.getSelectedFile().getPath();
+                    File archivo = new File(ruta);
+                    archivo.createNewFile();
+                } catch (IOException ex) {
+                    Logger.getLogger(InterfazGrafica.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            switch(tab.getSelectedIndex()){
+                case 0:
+                    new EscrituraTexto(ruta, tabDigestivo.getText(), 1);
+                    break;
+                case 1:
+                    new EscrituraTexto(ruta, tabOseo.getText(), 1);
+                    break;
+                case 2:
+                    new EscrituraTexto(ruta, tabGeneral.getText(), 1);
+                    break;
+            }
+        }
+    }//GEN-LAST:event_guardarItemActionPerformed
+
+    private void salirItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_salirItemActionPerformed
+        // TODO add your handling code here:
+        int op = JOptionPane.showConfirmDialog(rootPane, "¿Esta seguro de querer salir?");
+        if (op == JOptionPane.OK_OPTION ){
+            System.exit(0);
+        }
+    }//GEN-LAST:event_salirItemActionPerformed
+
+    private void limpiarItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_limpiarItemActionPerformed
+        // TODO add your handling code here:
+        switch(tab.getSelectedIndex()){
+            case 0:
+                tabDigestivo.setText("");
+                break;
+            case 1:
+                tabOseo.setText("");
+                break;
+            case 2:
+                tabGeneral.setText("");
+                break;
+        }
+    }//GEN-LAST:event_limpiarItemActionPerformed
 
     /**
      * @param args the command line arguments
@@ -221,18 +435,105 @@ public class InterfazGrafica extends javax.swing.JFrame {
         }
         return -1;
     }
+    
+    private Hashtable createActionTable(JTextComponent textComponent) {
+        Hashtable actions = new Hashtable();
+        Action[] actionsArray = textComponent.getActions();
+        for (int i = 0; i < actionsArray.length; i++) {
+            Action a = actionsArray[i];
+            actions.put(a.getValue(Action.NAME), a);
+        }
+        return actions;
+    } 
+    
+    private Action getActionByName(String name) {
+        Hashtable ht = new Hashtable();
+        ht = createActionTable(tabDigestivo);
+        return (Action)(ht.get(name));
+    }
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JMenuItem abrirItem;
     private javax.swing.JButton botonAnalizar;
     private javax.swing.JTextField columna;
+    private javax.swing.JMenu edicionMn;
     private javax.swing.JTextField fila;
+    private javax.swing.JMenuItem guardarItem;
+    private javax.swing.JLabel imagen1;
+    private javax.swing.JLabel imagen2;
+    private javax.swing.JLabel imagen3;
+    private javax.swing.JLabel imagen4;
+    private javax.swing.JLabel imagen5;
+    private javax.swing.JLabel imagen6;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JMenu jMenu1;
+    private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JMenuItem limpiarItem;
+    private javax.swing.JMenuItem salirItem;
     private javax.swing.JTabbedPane tab;
     private javax.swing.JTextPane tabDigestivo;
     private javax.swing.JTextPane tabGeneral;
     private javax.swing.JTextPane tabOseo;
     // End of variables declaration//GEN-END:variables
+
+    private void limpiarLabels() {
+        imagen1.setIcon(null);
+        imagen2.setIcon(null);
+        imagen3.setIcon(null);
+        imagen4.setIcon(null);
+        imagen5.setIcon(null);
+        imagen6.setIcon(null);
+    }
+
+    private void procesoFinal() {
+        int token = 0;
+        for(int i = 0 ; i < ana.getToken().size(); i++){
+            if((token = verificarTokens(ana.getToken(),i)) != 0){
+                ponerImagen(rutaImagen[token - 1]);
+            }
+        }
+    }
+
+    private int verificarTokens(ArrayList<Integer> token, int indice) {
+        int tok = 0;
+        if(token.get(indice) <= 13){
+            tok = token.get(indice);
+        }
+        return tok;
+        
+    }
+
+    private void inicializarRutas() {
+        rutaImagen = new String[13];
+        rutaImagen[0] = "src/Imagenes/boca.jpg";
+        rutaImagen[1] = "src/Imagenes/faringe.jpg";
+        rutaImagen[2] = "src/Imagenes/esofago.jpg";
+        rutaImagen[3] = "src/Imagenes/estomago.jpg";
+        rutaImagen[4] = "src/Imagenes/intestinoDelgado.jpg";
+        rutaImagen[5] = "src/Imagenes/intestinoGrueso.jpg";
+        rutaImagen[6] = "src/Imagenes/pelvis.jpg";
+        rutaImagen[7] = "src/Imagenes/craneo.jpg";
+        rutaImagen[8] = "src/Imagenes/maxilar.jpg";
+        rutaImagen[9] = "src/Imagenes/costilla.JPG";
+        rutaImagen[10] = "src/Imagenes/esternon.jpg";
+        rutaImagen[11] = "src/Imagenes/femur.jpg";
+        rutaImagen[12] = "src/Imagenes/coccix.jpg";
+    }
+
+    private void ponerImagen(String path) {
+        ImageIcon ima = new ImageIcon(path);
+        //verificando los labels
+        if(imagen1.getIcon() == null){
+            Icon icono = new ImageIcon(ima.getImage().getScaledInstance(imagen1.getWidth(), imagen1.getHeight(), Image.SCALE_DEFAULT));
+            imagen1.setIcon(icono);
+            this.repaint();
+        }else if(imagen2.getIcon() == null){
+            Icon icono = new ImageIcon(ima.getImage().getScaledInstance(imagen2.getWidth(), imagen2.getHeight(), Image.SCALE_DEFAULT));
+            imagen2.setIcon(icono);
+            this.repaint();
+        }
+    }
 }
