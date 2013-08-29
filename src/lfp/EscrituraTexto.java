@@ -10,6 +10,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 /**
@@ -27,7 +28,7 @@ public class EscrituraTexto {
     
     EscrituraTexto( String nombre , String titulo){
         try{
-            f = new File( nombre );
+            f = new File(nombre);
             escritora = new FileWriter(f);
             temporal = new BufferedWriter(escritora);
             impresora =  new PrintWriter(temporal);
@@ -72,5 +73,133 @@ public class EscrituraTexto {
             System.out.println("Error: " + e.getMessage());
         }
     }
+    
+    public void escribirErrores(ArrayList<String> error, ArrayList<Integer> columna, ArrayList<Integer> fila){
+        try{
+            escritora = new FileWriter(f,true);
+            temporal = new BufferedWriter(escritora);
+            impresora =  new PrintWriter(temporal);
+            
+            impresora.append( "<div align = \"center\"> \n");
+            impresora.append("      <table id=\"newspaper-b\" width=\"100\" cellspacing=\"2\" cellpadding=\"25\" border=\"0\">");
+            impresora.append("<thead>\n" +
+            "<tr>\n" +
+            "<th scope=\"col\"> No. Error </th>\n" +
+            "<th scope=\"col\"> Simbolo</th>\n" +
+            "<th scope=\"col\"> No. Linea</th>\n" +
+            "<th scope=\"col\"> No. Columna </th>\n" +
+            "</tr>\n" +
+            "</thead>");
+            
+            impresora.append("<tbody>");
+            for ( int i = 0 ; i < error.size()  ; i++){
+                impresora.append("<tr>\n" +
+                "    <td >\n" +
+                "   <font face=\"verdana, arial, helvetica\" size=2>\n" 
+                + (i+1) +    "\n" +
+                "   </font>\n" +
+                "   </td>\n" );
+                 impresora.append(
+                "    <td >\n" +
+                "   <font face=\"verdana, arial, helvetica\" size=2>\n" 
+                +  error.get(i) +  "\n" +
+                "   </font>\n" +
+                "   </td>\n" );
+                  impresora.append(
+                "    <td >\n" +
+                "   <font face=\"verdana, arial, helvetica\" size=2>\n" 
+                + fila.get(i)  +  "\n" +
+                "   </font>\n" +
+                "   </td>\n" );
+                impresora.append(
+                "    <td >\n" +
+                "   <font face=\"verdana, arial, helvetica\" size=2>\n" 
+                + columna.get(i)  +  "\n" +
+                "   </font>\n" +
+                "   </td>\n" + "</tr>");
+                
+               
+            }
+            
+                impresora.append("</table>\n " + "</div> \n" + "</tbody>" + "</BODY> \n" + "</HTML>");
+                impresora.close();
+                temporal.close();
+        }catch(IOException e){
+            System.out.println("Error: " + e.getMessage());
+            
+        }
+    }
+    
+    public void escribirSimbolos(ArrayList<String> lexema, ArrayList<Integer> columna, ArrayList<Integer> fila,
+            ArrayList<String> tipo, ArrayList<Integer> token){
+        try{
+            escritora = new FileWriter(f,true);
+            temporal = new BufferedWriter(escritora);
+            impresora =  new PrintWriter(temporal);
+            
+            impresora.append( "<div align = \"center\"> \n");
+            impresora.append("      <table id=\"newspaper-b\" width=\"100\" cellspacing=\"2\" cellpadding=\"25\" border=\"0\">");
+            impresora.append("<thead>\n" +
+            "<tr>\n" +
+            "<th scope=\"col\"> No. Palabra </th>\n" +
+            "<th scope=\"col\"> Token</th>\n" +
+            "<th scope=\"col\"> Tipo</th>\n" +
+            "<th scope=\"col\"> Linea </th>\n" +
+            "<th scope=\"col\">  Columna </th>\n" +
+            "<th scope=\"col\">  Palabra Reservada </th>\n" +
+            "</tr>\n" +
+            "</thead>");
+            
+            impresora.append("<tbody>");
+            for ( int i = 0 ; i < lexema.size()  ; i++){
+                impresora.append("<tr>\n" +
+                "    <td >\n" +
+                "   <font face=\"verdana, arial, helvetica\" size=2>\n" 
+                + (i+1) +    "\n" +
+                "   </font>\n" +
+                "   </td>\n" );
+                 impresora.append(
+                "    <td >\n" +
+                "   <font face=\"verdana, arial, helvetica\" size=2>\n" 
+                +  token.get(i) +  "\n" +
+                "   </font>\n" +
+                "   </td>\n" );
+                  impresora.append(
+                "    <td >\n" +
+                "   <font face=\"verdana, arial, helvetica\" size=2>\n" 
+                + tipo.get(i)  +  "\n" +
+                "   </font>\n" +
+                "   </td>\n" );
+                  impresora.append(
+                "    <td >\n" +
+                "   <font face=\"verdana, arial, helvetica\" size=2>\n" 
+                + lexema.get(i)  +  "\n" +
+                "   </font>\n" +
+                "   </td>\n" );
+                  impresora.append(
+                "    <td >\n" +
+                "   <font face=\"verdana, arial, helvetica\" size=2>\n" 
+                + fila.get(i)  +  "\n" +
+                "   </font>\n" +
+                "   </td>\n" );
+                impresora.append(
+                "    <td >\n" +
+                "   <font face=\"verdana, arial, helvetica\" size=2>\n" 
+                +  columna.get(i) +  "\n" +
+                "   </font>\n" +
+                "   </td>\n" + "</tr>");
+                
+               
+            }
+            
+                impresora.append("</table>\n " + "</div> \n" + "</tbody>" + "</BODY> \n" + "</HTML>");
+                impresora.close();
+                temporal.close();
+        }catch(IOException e){
+            System.out.println("Error: " + e.getMessage());
+            
+        }
+    }
+    
     
 }

@@ -204,6 +204,9 @@ public class Analizador {
                     }else if("i".equalsIgnoreCase(""+letra)){
                         estado = 33;
                         valorLexema = valorLexema + letra;
+                    }else if(letra == ';' || letra == '.' || letra == ','){
+                        estado = 56;
+                        valorLexema += letra; 
                     }else if(letra == 32){
                         estado = 0;
                         hacerCambio(contenedor);
@@ -217,6 +220,8 @@ public class Analizador {
                     else{
                         estado = 0;
                         error.add(""+letra);
+                        posicionFilaError.add(fila);
+                        posicionColumnaError.add(columna);
                        hacerCambio(contenedor);
                        contenedor.insertString(contenedor.getLength(),String.valueOf(letra), errorStyle);
                        columna++;
@@ -618,7 +623,6 @@ public class Analizador {
                 case 22:
                     estado = 0;
                     token.add(16);
-                    valorLexema += letra; 
                     lexema.add(valorLexema);
                     tipo.add("Referencia");
                     hacerCambio(contenedor);
@@ -626,6 +630,7 @@ public class Analizador {
                     posicionFila.add(fila);
                     posicionColumna.add(columna);
                     modificarColumna(valorLexema.length());
+                    posicionCarrete--;
                     break;
                 case 23:
                     if(letra == 'w' || letra == 'W'){
@@ -1132,7 +1137,7 @@ public class Analizador {
                     break;
                 case 55:
                     estado = 0;
-                    token.add(20);
+                    token.add(6);
                     lexema.add(valorLexema);
                     tipo.add("Palabra Reservada");
                     hacerCambio(contenedor);
@@ -1234,7 +1239,7 @@ public class Analizador {
                     break;
                 case 54:
                     estado = 0;
-                    token.add(20);
+                    token.add(5);
                     lexema.add(valorLexema);
                     tipo.add("Palabra Reservada");
                     hacerCambio(contenedor);
@@ -1244,7 +1249,20 @@ public class Analizador {
                     modificarColumna(valorLexema.length());
                     posicionCarrete--;
                     break;
+                case 56:
+                    estado = 0;
+                    token.add(30);
+                    lexema.add(valorLexema);
+                    tipo.add("Separador");
+                    hacerCambio(contenedor);
+                    contenedor.insertString(contenedor.getLength(),valorLexema, normalText);
+                    posicionFila.add(fila);
+                    posicionColumna.add(columna);
+                    modificarColumna(valorLexema.length());
+                    posicionCarrete--;
+                    break;
                 
+                    
                 default:
                     System.err.println("Error de Programacion, ese estado no existe");
                     estado = 0;

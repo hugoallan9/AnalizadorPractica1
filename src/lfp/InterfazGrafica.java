@@ -75,6 +75,9 @@ public class InterfazGrafica extends javax.swing.JFrame {
         imagen3 = new javax.swing.JLabel();
         imagen6 = new javax.swing.JLabel();
         imagen5 = new javax.swing.JLabel();
+        jButton1 = new javax.swing.JButton();
+        simboloBt = new javax.swing.JButton();
+        infoBt = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         abrirItem = new javax.swing.JMenuItem();
@@ -82,6 +85,8 @@ public class InterfazGrafica extends javax.swing.JFrame {
         limpiarItem = new javax.swing.JMenuItem();
         salirItem = new javax.swing.JMenuItem();
         edicionMn = new javax.swing.JMenu();
+        jMenu2 = new javax.swing.JMenu();
+        jMenuItem1 = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -113,26 +118,49 @@ public class InterfazGrafica extends javax.swing.JFrame {
             }
         });
 
-        columna.setText("jTextField1");
-
-        fila.setText("jTextField2");
+        columna.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                columnaActionPerformed(evt);
+            }
+        });
 
         jLabel1.setText("col");
 
         jLabel2.setText("fila");
 
-        imagen2.setText("Imagen 1");
+        imagen2.setText("Imagen 2");
 
         imagen1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Imagenes/boca.jpg"))); // NOI18N
         imagen1.setText("Imagen 1");
 
-        imagen4.setText("Imagen 1");
+        imagen4.setText("Imagen 4");
 
-        imagen3.setText("Imagen 1");
+        imagen3.setText("Imagen 3");
 
-        imagen6.setText("Imagen 1");
+        imagen6.setText("Imagen 6");
 
-        imagen5.setText("Imagen 1");
+        imagen5.setText("Imagen 5");
+
+        jButton1.setText("Errores Lexicos");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
+        simboloBt.setText("Tabla de Simbolos");
+        simboloBt.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                simboloBtActionPerformed(evt);
+            }
+        });
+
+        infoBt.setText("Informacion");
+        infoBt.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                infoBtActionPerformed(evt);
+            }
+        });
 
         jMenu1.setText("Archivo");
 
@@ -185,6 +213,18 @@ public class InterfazGrafica extends javax.swing.JFrame {
         edicionMn.setText("Edicion");
         jMenuBar1.add(edicionMn);
 
+        jMenu2.setText("Ayuda");
+
+        jMenuItem1.setText("Acerca de");
+        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem1ActionPerformed(evt);
+            }
+        });
+        jMenu2.add(jMenuItem1);
+
+        jMenuBar1.add(jMenu2);
+
         setJMenuBar(jMenuBar1);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -194,20 +234,30 @@ public class InterfazGrafica extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(28, 28, 28)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(tab, javax.swing.GroupLayout.PREFERRED_SIZE, 462, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(botonAnalizar)))
-                    .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jLabel1)
-                        .addGap(11, 11, 11)
-                        .addComponent(columna, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel2)
-                        .addGap(1, 1, 1)
-                        .addComponent(fila, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 41, Short.MAX_VALUE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(jLabel2)
+                                .addGap(9, 9, 9)
+                                .addComponent(columna, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabel1)
+                                .addGap(3, 3, 3)
+                                .addComponent(fila, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(28, 28, 28)
+                                .addComponent(botonAnalizar)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(jButton1)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(simboloBt)))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGap(0, 28, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(infoBt)
+                            .addComponent(tab, javax.swing.GroupLayout.PREFERRED_SIZE, 462, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(imagen1, javax.swing.GroupLayout.PREFERRED_SIZE, 116, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -236,11 +286,16 @@ public class InterfazGrafica extends javax.swing.JFrame {
                     .addComponent(imagen4, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(40, Short.MAX_VALUE)
+                .addContainerGap(21, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(botonAnalizar)
-                        .addGap(30, 30, 30)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(botonAnalizar)
+                            .addComponent(jButton1)
+                            .addComponent(simboloBt))
+                        .addGap(18, 18, 18)
+                        .addComponent(infoBt)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(tab, javax.swing.GroupLayout.PREFERRED_SIZE, 199, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -375,6 +430,46 @@ public class InterfazGrafica extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_limpiarItemActionPerformed
 
+    private void simboloBtActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_simboloBtActionPerformed
+        // TODO add your handling code here:
+        EscrituraTexto sim = new EscrituraTexto("TS.html", "Tabla de Simbolos");
+        sim.escribirSimbolos(ana.getLexema(), ana.getPosicionColumna(), ana.getPosicionFila(), ana.getTipo(), ana.getToken());
+    }//GEN-LAST:event_simboloBtActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+        EscrituraTexto reporteError = new EscrituraTexto("TE.html","Tabla de Errores");
+        reporteError.escribirErrores(ana.getError(), ana.getPosicionColumnaError(), ana.getPosicionFilaError());
+        
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void columnaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_columnaActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_columnaActionPerformed
+
+    private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
+        // TODO add your handling code here:
+        JOptionPane.showMessageDialog(this, "Hugo Allan García Monterrosa \n Carné 200714466");
+    }//GEN-LAST:event_jMenuItem1ActionPerformed
+
+    private void infoBtActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_infoBtActionPerformed
+        // TODO add your handling code here:
+        switch(tab.getSelectedIndex()){
+            case 0:
+                Digestivo di = new Digestivo(this, true);
+                di.setVisible(true);
+                break;
+            case 1:
+                Oseo oso = new Oseo(this, true);
+                oso.setVisible(true);
+                break;
+            default:
+                JOptionPane.showMessageDialog(this, "No hay información de esta pestaña");
+                break;
+                        
+        }
+    }//GEN-LAST:event_infoBtActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -464,15 +559,20 @@ public class InterfazGrafica extends javax.swing.JFrame {
     private javax.swing.JLabel imagen4;
     private javax.swing.JLabel imagen5;
     private javax.swing.JLabel imagen6;
+    private javax.swing.JButton infoBt;
+    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JMenu jMenu1;
+    private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JMenuItem limpiarItem;
     private javax.swing.JMenuItem salirItem;
+    private javax.swing.JButton simboloBt;
     private javax.swing.JTabbedPane tab;
     private javax.swing.JTextPane tabDigestivo;
     private javax.swing.JTextPane tabGeneral;
@@ -524,16 +624,34 @@ public class InterfazGrafica extends javax.swing.JFrame {
     }
 
     private void ponerImagen(String path) {
-        ImageIcon ima = new ImageIcon(path);
+        
         //verificando los labels
         if(imagen1.getIcon() == null){
+            ImageIcon ima = new ImageIcon(path);
             Icon icono = new ImageIcon(ima.getImage().getScaledInstance(imagen1.getWidth(), imagen1.getHeight(), Image.SCALE_DEFAULT));
             imagen1.setIcon(icono);
-            this.repaint();
         }else if(imagen2.getIcon() == null){
-            Icon icono = new ImageIcon(ima.getImage().getScaledInstance(imagen2.getWidth(), imagen2.getHeight(), Image.SCALE_DEFAULT));
+            ImageIcon ima1 = new ImageIcon(path);
+            Icon icono = new ImageIcon(ima1.getImage().getScaledInstance(imagen2.getWidth(), imagen2.getHeight(), Image.SCALE_DEFAULT));
             imagen2.setIcon(icono);
-            this.repaint();
+        }else if(imagen3.getIcon() == null){
+            ImageIcon ima2 = new ImageIcon(path);
+            Icon icono = new ImageIcon(ima2.getImage().getScaledInstance(imagen3.getWidth(), imagen3.getHeight(), Image.SCALE_DEFAULT));
+            imagen3.setIcon(icono);
+        }else if(imagen4.getIcon() == null){
+            ImageIcon ima3 = new ImageIcon(path);
+            Icon icono = new ImageIcon(ima3.getImage().getScaledInstance(imagen4.getWidth(), imagen4.getHeight(), Image.SCALE_DEFAULT));
+            imagen4.setIcon(icono);
+        }else if(imagen5.getIcon() == null){
+            ImageIcon ima4 = new ImageIcon(path);
+            Icon icono = new ImageIcon(ima4.getImage().getScaledInstance(imagen5.getWidth(), imagen5.getHeight(), Image.SCALE_DEFAULT));
+            imagen5.setIcon(icono);
+        }else if(imagen6.getIcon() == null){
+            ImageIcon ima5 = new ImageIcon(path);
+            Icon icono = new ImageIcon(ima5.getImage().getScaledInstance(imagen6.getWidth(), imagen6.getHeight(), Image.SCALE_DEFAULT));
+            imagen6.setIcon(icono);
+        }else{
+            
         }
     }
 }

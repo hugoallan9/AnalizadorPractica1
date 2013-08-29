@@ -60,6 +60,21 @@
             <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="Action action = getActionByName(DefaultEditorKit.cutAction);&#xa;action.putValue(Action.NAME, &quot;Cortar&quot;);&#xa;edicionMn.add(action);&#xa;Action action1 = getActionByName(DefaultEditorKit.copyAction);&#xa;action1.putValue(Action.NAME, &quot;Copiar&quot;);&#xa;edicionMn.add(action1);&#xa;Action action2 = getActionByName(DefaultEditorKit.pasteAction);&#xa;action2.putValue(Action.NAME, &quot;Pegar&quot;);&#xa;edicionMn.add(action2);"/>
           </AuxValues>
         </Menu>
+        <Menu class="javax.swing.JMenu" name="jMenu2">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Ayuda"/>
+          </Properties>
+          <SubComponents>
+            <MenuItem class="javax.swing.JMenuItem" name="jMenuItem1">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Acerca de"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItem1ActionPerformed"/>
+              </Events>
+            </MenuItem>
+          </SubComponents>
+        </Menu>
       </SubComponents>
     </Menu>
   </NonVisualComponents>
@@ -88,25 +103,38 @@
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" attributes="0">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Group type="102" alignment="0" attributes="0">
-                      <EmptySpace min="-2" pref="28" max="-2" attributes="0"/>
+                  <Group type="102" attributes="0">
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="tab" alignment="0" min="-2" pref="462" max="-2" attributes="0"/>
-                          <Component id="botonAnalizar" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <Group type="102" alignment="0" attributes="0">
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace min="-2" pref="9" max="-2" attributes="0"/>
+                              <Component id="columna" min="-2" pref="43" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace min="-2" pref="3" max="-2" attributes="0"/>
+                              <Component id="fila" min="-2" pref="41" max="-2" attributes="0"/>
+                          </Group>
+                          <Group type="102" alignment="0" attributes="0">
+                              <EmptySpace min="-2" pref="28" max="-2" attributes="0"/>
+                              <Component id="botonAnalizar" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                              <Component id="jButton1" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="simboloBt" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                      </Group>
+                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                  </Group>
+                  <Group type="102" alignment="1" attributes="0">
+                      <EmptySpace min="0" pref="28" max="32767" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Component id="infoBt" min="-2" max="-2" attributes="0"/>
+                          <Component id="tab" min="-2" pref="462" max="-2" attributes="0"/>
                       </Group>
                   </Group>
-                  <Group type="102" alignment="0" attributes="0">
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace min="-2" pref="11" max="-2" attributes="0"/>
-                      <Component id="columna" min="-2" pref="43" max="-2" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace min="-2" pref="1" max="-2" attributes="0"/>
-                      <Component id="fila" min="-2" pref="41" max="-2" attributes="0"/>
-                  </Group>
               </Group>
-              <EmptySpace pref="41" max="32767" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="1" attributes="0">
                       <Component id="imagen1" min="-2" pref="116" max="-2" attributes="0"/>
@@ -144,11 +172,17 @@
               <EmptySpace max="32767" attributes="0"/>
           </Group>
           <Group type="102" alignment="1" attributes="0">
-              <EmptySpace pref="40" max="32767" attributes="0"/>
+              <EmptySpace pref="21" max="32767" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="1" attributes="0">
-                      <Component id="botonAnalizar" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace min="-2" pref="30" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="botonAnalizar" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="jButton1" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="simboloBt" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace type="separate" max="-2" attributes="0"/>
+                      <Component id="infoBt" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
                       <Component id="tab" min="-2" pref="199" max="-2" attributes="0"/>
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
@@ -247,14 +281,11 @@
       </Events>
     </Component>
     <Component class="javax.swing.JTextField" name="columna">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="jTextField1"/>
-      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="columnaActionPerformed"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JTextField" name="fila">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="jTextField2"/>
-      </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel1">
       <Properties>
@@ -268,7 +299,7 @@
     </Component>
     <Component class="javax.swing.JLabel" name="imagen2">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Imagen 1"/>
+        <Property name="text" type="java.lang.String" value="Imagen 2"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="imagen1">
@@ -281,23 +312,47 @@
     </Component>
     <Component class="javax.swing.JLabel" name="imagen4">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Imagen 1"/>
+        <Property name="text" type="java.lang.String" value="Imagen 4"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="imagen3">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Imagen 1"/>
+        <Property name="text" type="java.lang.String" value="Imagen 3"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="imagen6">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Imagen 1"/>
+        <Property name="text" type="java.lang.String" value="Imagen 6"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="imagen5">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Imagen 1"/>
+        <Property name="text" type="java.lang.String" value="Imagen 5"/>
       </Properties>
+    </Component>
+    <Component class="javax.swing.JButton" name="jButton1">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Errores Lexicos"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton1ActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="simboloBt">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Tabla de Simbolos"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="simboloBtActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="infoBt">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Informacion"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="infoBtActionPerformed"/>
+      </Events>
     </Component>
   </SubComponents>
 </Form>
