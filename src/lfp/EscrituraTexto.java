@@ -14,7 +14,8 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 /**
- *
+ * Clase que permite generar las tablas de errores y
+ * de simbolos en html
  * @author hugo
  */
 public class EscrituraTexto {
@@ -26,6 +27,11 @@ public class EscrituraTexto {
     FileReader lector = null;
     Scanner tempo = null;
     
+    /**
+     * Constructor de la clase 
+     * @param nombre nombre del archivo
+     * @param titulo Titulo del html
+     */
     EscrituraTexto( String nombre , String titulo){
         try{
             f = new File(nombre);
@@ -34,6 +40,7 @@ public class EscrituraTexto {
             impresora =  new PrintWriter(temporal);
             
             impresora.write("<HTML lang = \" es \" >"  + "\n");
+            impresora.write("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" />" + "\n");
             impresora.write("\t <HEAD>" + "\n");
             impresora.write("\t\t <TITLE> " + titulo + "</TITLE> \n");
             impresora.write("<style type=\"text/css\">\n" +
@@ -56,6 +63,12 @@ public class EscrituraTexto {
         }
     }
     
+    /**
+     * Segundo constructor de la clase
+     * @param nombre nombre del fichero
+     * @param contenido contenido a guardar en el .body
+     * @param op Forma de guardar
+     */
     EscrituraTexto( String nombre, String contenido, int op){
         try{
             f = new File( nombre );
@@ -74,6 +87,12 @@ public class EscrituraTexto {
         }
     }
     
+    /**
+     *  Metodo que genera el html con la tabla de errores
+     * @param error Lista de errores obtenida en el analisis
+     * @param columna Posicion en columna de los errores
+     * @param fila  Posicion en fila de los errores
+     */
     public void escribirErrores(ArrayList<String> error, ArrayList<Integer> columna, ArrayList<Integer> fila){
         try{
             escritora = new FileWriter(f,true);
@@ -129,7 +148,14 @@ public class EscrituraTexto {
             
         }
     }
-    
+    /**
+     * Metodo que genera el html de los simbolos
+     * @param lexema El lexema
+     * @param columna Posicion del lexema
+     * @param fila Posicion en fila del lexema
+     * @param tipo Tipo del lexema
+     * @param token Numero del token
+     */
     public void escribirSimbolos(ArrayList<String> lexema, ArrayList<Integer> columna, ArrayList<Integer> fila,
             ArrayList<String> tipo, ArrayList<Integer> token){
         try{
@@ -144,6 +170,7 @@ public class EscrituraTexto {
             "<th scope=\"col\"> No. Palabra </th>\n" +
             "<th scope=\"col\"> Token</th>\n" +
             "<th scope=\"col\"> Tipo</th>\n" +
+            "<th scope=\"col\"> Lexema</th>\n" +
             "<th scope=\"col\"> Linea </th>\n" +
             "<th scope=\"col\">  Columna </th>\n" +
             "<th scope=\"col\">  Palabra Reservada </th>\n" +
@@ -182,10 +209,16 @@ public class EscrituraTexto {
                 + fila.get(i)  +  "\n" +
                 "   </font>\n" +
                 "   </td>\n" );
+                  impresora.append(
+                "    <td >\n" +
+                "   <font face=\"verdana, arial, helvetica\" size=2>\n" 
+                + columna.get(i)  +  "\n" +
+                "   </font>\n" +
+                "   </td>\n" );
                 impresora.append(
                 "    <td >\n" +
                 "   <font face=\"verdana, arial, helvetica\" size=2>\n" 
-                +  columna.get(i) +  "\n" +
+                +  esReservada(token.get(i)) +  "\n" +
                 "   </font>\n" +
                 "   </td>\n" + "</tr>");
                 
@@ -200,6 +233,21 @@ public class EscrituraTexto {
             
         }
     }
+    
+    /**
+     * Metodo que analiza segun el token si una palabra es reservada o no
+     * @param get Token a analizar
+     * @return Regresa SI en caso sea reservada y NO en caso no lo sea.
+     */
+    private String esReservada(Integer get) {
+        if(get <= 13){
+            return "SI";
+        }else{
+            return "NO";
+        }
+    }
+    
+    
     
     
 }

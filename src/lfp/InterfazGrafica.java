@@ -4,6 +4,7 @@
  */
 package lfp;
 
+import java.awt.Desktop;
 import java.awt.Image;
 import java.io.File;
 import java.io.IOException;
@@ -86,6 +87,8 @@ public class InterfazGrafica extends javax.swing.JFrame {
         salirItem = new javax.swing.JMenuItem();
         edicionMn = new javax.swing.JMenu();
         jMenu2 = new javax.swing.JMenu();
+        jMenuItem2 = new javax.swing.JMenuItem();
+        jMenuItem3 = new javax.swing.JMenuItem();
         jMenuItem1 = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -130,7 +133,6 @@ public class InterfazGrafica extends javax.swing.JFrame {
 
         imagen2.setText("Imagen 2");
 
-        imagen1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Imagenes/boca.jpg"))); // NOI18N
         imagen1.setText("Imagen 1");
 
         imagen4.setText("Imagen 4");
@@ -182,7 +184,7 @@ public class InterfazGrafica extends javax.swing.JFrame {
         });
         jMenu1.add(guardarItem);
 
-        limpiarItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_C, java.awt.event.InputEvent.CTRL_MASK));
+        limpiarItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_L, java.awt.event.InputEvent.CTRL_MASK));
         limpiarItem.setText("Limpiar Area");
         limpiarItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -214,6 +216,22 @@ public class InterfazGrafica extends javax.swing.JFrame {
         jMenuBar1.add(edicionMn);
 
         jMenu2.setText("Ayuda");
+
+        jMenuItem2.setText("Manual de Usuario");
+        jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem2ActionPerformed(evt);
+            }
+        });
+        jMenu2.add(jMenuItem2);
+
+        jMenuItem3.setText("Manual Técnico");
+        jMenuItem3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem3ActionPerformed(evt);
+            }
+        });
+        jMenu2.add(jMenuItem3);
 
         jMenuItem1.setText("Acerca de");
         jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
@@ -253,11 +271,10 @@ public class InterfazGrafica extends javax.swing.JFrame {
                                 .addComponent(simboloBt)))
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(0, 28, Short.MAX_VALUE)
+                        .addGap(0, 32, Short.MAX_VALUE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(infoBt)
                             .addComponent(tab, javax.swing.GroupLayout.PREFERRED_SIZE, 462, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(imagen1, javax.swing.GroupLayout.PREFERRED_SIZE, 116, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -284,7 +301,7 @@ public class InterfazGrafica extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(imagen3, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(imagen4, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap(21, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -355,9 +372,10 @@ public class InterfazGrafica extends javax.swing.JFrame {
         FileNameExtensionFilter filtro  = new FileNameExtensionFilter("Archivo de Texto para lfp", "body");
         fc.setFileFilter(filtro);
         int seleccion = fc.showOpenDialog(this);
+        String ru = null;
         if(seleccion == JFileChooser.APPROVE_OPTION){
-            System.out.println(ruta = fc.getSelectedFile().getPath());
-            Lectura lectora = new Lectura(ruta);
+            System.out.println(ru = fc.getSelectedFile().getPath());
+            Lectura lectora = new Lectura(ru);
             try {
                 doc.insertString(doc.getLength(), lectora.leer() , null);
             } catch (BadLocationException ex) {
@@ -365,12 +383,15 @@ public class InterfazGrafica extends javax.swing.JFrame {
             }
             switch(tab.getSelectedIndex()){
                 case 0:
+                    ruta = ru;
                     tabDigestivo.setDocument(doc);
                     break;
                 case 1:
+                    ruta1 = ru; 
                     tabOseo.setDocument(doc);
                     break;
                 case 2:
+                    ruta2 = ru;
                     tabGeneral.setDocument(doc);
                     break;
             }
@@ -379,32 +400,68 @@ public class InterfazGrafica extends javax.swing.JFrame {
 
     private void guardarItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_guardarItemActionPerformed
         // TODO add your handling code here:
-        if(ruta == null){
-            JFileChooser fc = new JFileChooser();
-            FileNameExtensionFilter filtro  = new FileNameExtensionFilter("Archivo de Texto para lfp", "body");
-            fc.setFileFilter(filtro);
-            int seleccion = fc.showOpenDialog(this);
-            if(seleccion == JFileChooser.APPROVE_OPTION){
-                try {
-                    ruta = fc.getSelectedFile().getPath();
-                    File archivo = new File(ruta);
-                    archivo.createNewFile();
-                } catch (IOException ex) {
-                    Logger.getLogger(InterfazGrafica.class.getName()).log(Level.SEVERE, null, ex);
+        switch(tab.getSelectedIndex()){ 
+            case 0:
+                if(ruta == null){
+                    JFileChooser fc = new JFileChooser();
+                    FileNameExtensionFilter filtro  = new FileNameExtensionFilter("Archivo de Texto para lfp", "body");
+                    fc.setFileFilter(filtro);
+                    int seleccion = fc.showOpenDialog(this);
+                    if(seleccion == JFileChooser.APPROVE_OPTION){
+                        try {
+                            ruta = fc.getSelectedFile().getPath();
+                            File archivo = new File(ruta);
+                            archivo.createNewFile();
+                        } catch (IOException ex) {
+                            Logger.getLogger(InterfazGrafica.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    }
+                   
+                           
+                    }else{
+                        new EscrituraTexto(ruta, tabDigestivo.getText(), 1);
+                    }
+                break;
+            case 1:
+                if(ruta1 == null){
+                    JFileChooser fc = new JFileChooser();
+                    FileNameExtensionFilter filtro  = new FileNameExtensionFilter("Archivo de Texto para lfp", "body");
+                    fc.setFileFilter(filtro);
+                    int seleccion = fc.showOpenDialog(this);
+                    if(seleccion == JFileChooser.APPROVE_OPTION){
+                        try {
+                            ruta1 = fc.getSelectedFile().getPath();
+                            File archivo = new File(ruta1);
+                            archivo.createNewFile();
+                        } catch (IOException ex) {
+                            Logger.getLogger(InterfazGrafica.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    }
+                }else{ 
+                    new EscrituraTexto(ruta1, tabOseo.getText(), 1);
                 }
-            }
-            switch(tab.getSelectedIndex()){
-                case 0:
-                    new EscrituraTexto(ruta, tabDigestivo.getText(), 1);
                     break;
-                case 1:
-                    new EscrituraTexto(ruta, tabOseo.getText(), 1);
+            case 2:
+                if(ruta2 == null){
+                    JFileChooser fc = new JFileChooser();
+                    FileNameExtensionFilter filtro  = new FileNameExtensionFilter("Archivo de Texto para lfp", "body");
+                    fc.setFileFilter(filtro);
+                    int seleccion = fc.showOpenDialog(this);
+                    if(seleccion == JFileChooser.APPROVE_OPTION){
+                        try {
+                            ruta2 = fc.getSelectedFile().getPath();
+                            File archivo = new File(ruta2);
+                            archivo.createNewFile();
+                        } catch (IOException ex) {
+                            Logger.getLogger(InterfazGrafica.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    }
+                }else{
+                    new EscrituraTexto(ruta2, tabGeneral.getText(), 1);
+                }
                     break;
-                case 2:
-                    new EscrituraTexto(ruta, tabGeneral.getText(), 1);
-                    break;
-            }
         }
+        
     }//GEN-LAST:event_guardarItemActionPerformed
 
     private void salirItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_salirItemActionPerformed
@@ -434,12 +491,29 @@ public class InterfazGrafica extends javax.swing.JFrame {
         // TODO add your handling code here:
         EscrituraTexto sim = new EscrituraTexto("TS.html", "Tabla de Simbolos");
         sim.escribirSimbolos(ana.getLexema(), ana.getPosicionColumna(), ana.getPosicionFila(), ana.getTipo(), ana.getToken());
+        File file = new File("TS.html");
+        Desktop desk ;
+        desk = Desktop.getDesktop();
+        try {
+            desk.open(file);
+        } catch (IOException ex) {
+            Logger.getLogger(InterfazGrafica.class.getName()).log(Level.SEVERE, null, ex);
+        }
+               
     }//GEN-LAST:event_simboloBtActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
         EscrituraTexto reporteError = new EscrituraTexto("TE.html","Tabla de Errores");
         reporteError.escribirErrores(ana.getError(), ana.getPosicionColumnaError(), ana.getPosicionFilaError());
+        File file = new File("TE.html");
+        Desktop desk ;
+        desk = Desktop.getDesktop();
+        try {
+            desk.open(file);
+        } catch (IOException ex) {
+            Logger.getLogger(InterfazGrafica.class.getName()).log(Level.SEVERE, null, ex);
+        }
         
     }//GEN-LAST:event_jButton1ActionPerformed
 
@@ -470,7 +544,27 @@ public class InterfazGrafica extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_infoBtActionPerformed
 
-    /**
+    private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
+         // TODO add your handling code here:
+        try {
+            File path = new File ("ManualUsuario.pdf");
+            Desktop.getDesktop().open(path);
+        }catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }//GEN-LAST:event_jMenuItem2ActionPerformed
+
+    private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
+         // TODO add your handling code here:
+        try {
+            File path = new File ("ManualTecnico.pdf");
+            Desktop.getDesktop().open(path);
+        }catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }//GEN-LAST:event_jMenuItem3ActionPerformed
+
+    /** Main de la aplicacion
      * @param args the command line arguments
      */
     public static void main(String args[]) {
@@ -508,6 +602,12 @@ public class InterfazGrafica extends javax.swing.JFrame {
    
     }
     
+    /**
+     * Metodo que permite conocer la posicion en Filas
+     * @param pos posicion en el texto
+     * @param editor JTextComponent que se desea analizar
+     * @return La posicion relativa de la columna
+     */
     public static int getRow(int pos, JTextComponent editor) {
         int rn = (pos==0) ? 1 : 0;
         try {
@@ -522,6 +622,12 @@ public class InterfazGrafica extends javax.swing.JFrame {
         return rn;
     }
 
+        /**
+         *  Metodo para obtener la columna
+         * @param pos posicon dentro del estring a analizar
+         * @param editor Componente a analizar
+         * @return La posicion en columna
+         */
     public static int getColumn(int pos, JTextComponent editor) {
         try {
             return pos-Utilities.getRowStart(editor, pos)+1;
@@ -531,6 +637,11 @@ public class InterfazGrafica extends javax.swing.JFrame {
         return -1;
     }
     
+    /**
+     * Metodo para obtener el hashtable del componente
+     * @param textComponent
+     * @return Hashtable del JTextPane
+     */
     private Hashtable createActionTable(JTextComponent textComponent) {
         Hashtable actions = new Hashtable();
         Action[] actionsArray = textComponent.getActions();
@@ -541,6 +652,11 @@ public class InterfazGrafica extends javax.swing.JFrame {
         return actions;
     } 
     
+    /**
+     *  Metodo para obtener la acciones del JTextPane
+     * @param name Nombre de la accion que se desea
+     * @return 
+     */
     private Action getActionByName(String name) {
         Hashtable ht = new Hashtable();
         ht = createActionTable(tabDigestivo);
@@ -567,6 +683,8 @@ public class InterfazGrafica extends javax.swing.JFrame {
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
+    private javax.swing.JMenuItem jMenuItem2;
+    private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
@@ -579,6 +697,9 @@ public class InterfazGrafica extends javax.swing.JFrame {
     private javax.swing.JTextPane tabOseo;
     // End of variables declaration//GEN-END:variables
 
+    /**
+     * Metodo que limpia los labels 
+     */
     private void limpiarLabels() {
         imagen1.setIcon(null);
         imagen2.setIcon(null);
@@ -588,6 +709,9 @@ public class InterfazGrafica extends javax.swing.JFrame {
         imagen6.setIcon(null);
     }
 
+    /**
+     * Metodo que pone los dibujos al final del analisis
+     */
     private void procesoFinal() {
         int token = 0;
         for(int i = 0 ; i < ana.getToken().size(); i++){
@@ -597,6 +721,12 @@ public class InterfazGrafica extends javax.swing.JFrame {
         }
     }
 
+    /**
+     *  Verifica por tokens si una palabra es reservada
+     * @param token token a analizar
+     * @param indice posicion en el array del lexema que se desea analizar
+     * @return 
+     */ 
     private int verificarTokens(ArrayList<Integer> token, int indice) {
         int tok = 0;
         if(token.get(indice) <= 13){
@@ -605,49 +735,57 @@ public class InterfazGrafica extends javax.swing.JFrame {
         return tok;
         
     }
-
+    
+    /**
+     *  Metodo para poner las rutas a las imagenes 
+     */
     private void inicializarRutas() {
         rutaImagen = new String[13];
-        rutaImagen[0] = "src/Imagenes/boca.jpg";
-        rutaImagen[1] = "src/Imagenes/faringe.jpg";
-        rutaImagen[2] = "src/Imagenes/esofago.jpg";
-        rutaImagen[3] = "src/Imagenes/estomago.jpg";
-        rutaImagen[4] = "src/Imagenes/intestinoDelgado.jpg";
-        rutaImagen[5] = "src/Imagenes/intestinoGrueso.jpg";
-        rutaImagen[6] = "src/Imagenes/pelvis.jpg";
-        rutaImagen[7] = "src/Imagenes/craneo.jpg";
-        rutaImagen[8] = "src/Imagenes/maxilar.jpg";
-        rutaImagen[9] = "src/Imagenes/costilla.JPG";
-        rutaImagen[10] = "src/Imagenes/esternon.jpg";
-        rutaImagen[11] = "src/Imagenes/femur.jpg";
-        rutaImagen[12] = "src/Imagenes/coccix.jpg";
+        rutaImagen[0] = "/Imagenes/boca.jpg";
+        rutaImagen[1] = "/Imagenes/faringe.jpg";
+        rutaImagen[2] = "/Imagenes/esofago.jpg";
+        rutaImagen[3] = "/Imagenes/estomago.jpg";
+        rutaImagen[4] = "/Imagenes/intestinoDelgado.jpg";
+        rutaImagen[5] = "/Imagenes/intestinoGrueso.jpg";
+        rutaImagen[6] = "/Imagenes/pelvis.jpg";
+        rutaImagen[7] = "/Imagenes/craneo.jpg";
+        rutaImagen[8] = "/Imagenes/maxilar.jpg";
+        rutaImagen[9] = "/Imagenes/costilla.JPG";
+        rutaImagen[10] = "/Imagenes/esternon.jpg";
+        rutaImagen[11] = "/Imagenes/femur.jpg";
+        rutaImagen[12] = "/Imagenes/coccix.jpg";
     }
-
+    
+    /**
+     * Metodo que pone una imagen en algun Label
+     * @param path Ruta de la imagen
+     */
     private void ponerImagen(String path) {
         
         //verificando los labels
         if(imagen1.getIcon() == null){
-            ImageIcon ima = new ImageIcon(path);
+            System.out.println("La ruta queda: " + getClass().getResource(path));
+            ImageIcon ima = new ImageIcon(getClass().getResource(path));
             Icon icono = new ImageIcon(ima.getImage().getScaledInstance(imagen1.getWidth(), imagen1.getHeight(), Image.SCALE_DEFAULT));
             imagen1.setIcon(icono);
         }else if(imagen2.getIcon() == null){
-            ImageIcon ima1 = new ImageIcon(path);
+            ImageIcon ima1 = new ImageIcon(getClass().getResource(path));
             Icon icono = new ImageIcon(ima1.getImage().getScaledInstance(imagen2.getWidth(), imagen2.getHeight(), Image.SCALE_DEFAULT));
             imagen2.setIcon(icono);
         }else if(imagen3.getIcon() == null){
-            ImageIcon ima2 = new ImageIcon(path);
+            ImageIcon ima2 = new ImageIcon(getClass().getResource(path));
             Icon icono = new ImageIcon(ima2.getImage().getScaledInstance(imagen3.getWidth(), imagen3.getHeight(), Image.SCALE_DEFAULT));
             imagen3.setIcon(icono);
         }else if(imagen4.getIcon() == null){
-            ImageIcon ima3 = new ImageIcon(path);
+            ImageIcon ima3 = new ImageIcon(getClass().getResource(path));
             Icon icono = new ImageIcon(ima3.getImage().getScaledInstance(imagen4.getWidth(), imagen4.getHeight(), Image.SCALE_DEFAULT));
             imagen4.setIcon(icono);
         }else if(imagen5.getIcon() == null){
-            ImageIcon ima4 = new ImageIcon(path);
+            ImageIcon ima4 = new ImageIcon(getClass().getResource(path));
             Icon icono = new ImageIcon(ima4.getImage().getScaledInstance(imagen5.getWidth(), imagen5.getHeight(), Image.SCALE_DEFAULT));
             imagen5.setIcon(icono);
         }else if(imagen6.getIcon() == null){
-            ImageIcon ima5 = new ImageIcon(path);
+            ImageIcon ima5 = new ImageIcon(getClass().getResource(path));
             Icon icono = new ImageIcon(ima5.getImage().getScaledInstance(imagen6.getWidth(), imagen6.getHeight(), Image.SCALE_DEFAULT));
             imagen6.setIcon(icono);
         }else{

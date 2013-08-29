@@ -17,7 +17,9 @@ import javax.swing.text.StyleContext;
 import javax.swing.text.StyledDocument;
 
 /**
- *
+ * Clase de implementacion del automata finito determinista
+ * para reconocer las expresiones id, fecha, año, numero entero
+ * palabras reservadas, referencias, fuentes.
  * @author hugo
  */
 public class Analizador {
@@ -35,11 +37,24 @@ public class Analizador {
     Style expresionRegular = estilo.addStyle("regular", null);
     public static String newline = System.getProperty("line.separator");
     
+    
+    /**
+     * Constructor de la clase Analizador
+     * @param op Es un parametro que recibe el constructor para
+     * saber en que modo trabajar. op = 0 significa que trabaja
+     * para el aparato digestivo, op = 1 para el sistema oseo y op = 2
+     * en ambos.
+     */
     Analizador(int op){
         pestania = op;
         inicializar();
     }
     
+    
+    /**
+     * Metodo que inicializa los componentes de la clase
+     * analizador.
+     */
     private void inicializar(){
         pestania = 0;
         fila = 1;
@@ -64,6 +79,10 @@ public class Analizador {
         StyleConstants.setForeground(expresionRegular, Color.GREEN);
     }
 
+    /**
+     * Metodo que inicializa el array que contiene las palabras
+     * reservadas para el analizador.
+     */
     private void inicializarReservadas() {
         palabraReservadaDigestivo[0] = "boca";
         palabraReservadaDigestivo[1] = "faringe";
@@ -78,10 +97,15 @@ public class Analizador {
         palabraReservadaOseo[6] = "coccix";
         }
     
-    public Analizador(){
-        inicializar();
-    }
-    
+ 
+    /**
+     * Metodo que verifica si un caracter pertenece a un alfabeto
+     * reducido donde no se encuentra una letra en particular
+     * @param entrada caracter que se desea analizar
+     * @param letra letra que se desea quitar del alfabeto
+     * @return Regresa verdadero si entrada pertenece al alfabeto reducido
+     * y falso en caso contrario
+     */
     private boolean belongsToAlphabetMinus(char entrada, String letra){
         boolean result = false;
         String conversion = ""+entrada;
@@ -94,32 +118,20 @@ public class Analizador {
         
     }
     
-    private boolean comprobarPalabra(String palabra, int op){
-        boolean result = false;
-        ciclo1:
-        switch(op){
-            //Caso de palabras reservadas del digestivo
-            case 0:
-                for( int i = 0 ; i < 4 ; i++ ){
-                    if ( palabra.equalsIgnoreCase(palabraReservadaDigestivo[i])){
-                        result = true;
-                        break ciclo1;
-                    }
-                }
-            // Caso del oseo    
-            case 1:
-                for (int i = 0 ; i < 7 ; i++){
-                    if ( palabra.equalsIgnoreCase(palabraReservadaOseo[i])){
-                        result = true;
-                        break ciclo1;
-                    }
-                }
-            default:
-                System.err.println("No has ingresado una opcion valida");
-        }
-        return result;
-    }
+    /**
+     * Metodo que comprueba si un id es una palabra reservada.
+     * @param palabra ID que se desea analizar
+     * @param op Si op = 0 solo marca como reservadas las del aparato digestivo, op = 1 para
+     * el sistema oseo y op = 2 para ambos
+     * @return Verdadero si la palabra es reservada
+     */
+
     
+    /**
+     * Metodo que comprueba si un ID es una referencia web
+     * @param expresion ID que se desea analizar
+     * @return Verdadero en caso cumpla con ser referencia web con una extension permitida
+     */
     private boolean comprobarExtension(String expresion){
         boolean resultado = false;
         String extension = "";
@@ -157,10 +169,11 @@ public class Analizador {
     }
     
     /**
-     *
-     * @param entrada
-     * @param recipiente
-     * @param op
+     * Metodo que analiza un string de entrada de manera lexica, aceptando o rechazando palabras
+     * @param entrada String de entrada que se desea analizar
+     * @param recipiente Es el contenedor del JTextPane en donde se esta escribiendo
+     * @param op El modod en el que se desea trabajar, op = 0 para digestivo, op = 1 para oseo y
+     * op = 2 para general.
      */
     public DefaultStyledDocument analizar(String entrada,  int op) throws BadLocationException{
         DefaultStyledDocument contenedor;
@@ -1274,7 +1287,12 @@ public class Analizador {
         
         
     }
-
+    /**
+     * Metodo que verifica si es necesario hacer un salto de linea al llegar a un 
+     * limite de 50 caracteres
+     * @return verdadero si es necesario hacer el cambio de linea y falso en caso
+     * contrario
+     */
     private boolean cambioFila() {
         boolean cambio = false;
         if(columna + valorLexema.length() >= 50){
@@ -1285,7 +1303,14 @@ public class Analizador {
         return cambio;
                 
     }
-
+ 
+    /**
+     * Metodo que comprueba si un id es una palabra reservada.
+     * @param valorLexema Metodo que comprueba si un id es una palabra reservada.
+     * @param op Si op = 0 solo marca como reservadas las del aparato digestivo, op = 1 para
+     * el sistema oseo y op = 2 para ambos
+     * @return Verdadero si la palabra es reservada
+     */
     private int comprobarReservada(String valorLexema, int op){
         int  respuesta = 50;
         cicloReserva:
@@ -1337,7 +1362,10 @@ public class Analizador {
         return respuesta;
        
     }
-
+    
+    /**
+     * Metodo que va imprimiendo los resultados en consola, usado para encontrar errores
+     */
     private void imprimirResultados() {
         System.out.println("*****************");
         for(int i = 0 ; i < lexema.size() ; i++){
@@ -1346,25 +1374,35 @@ public class Analizador {
         
     }
 
+    /**
+     * Metodo que limpia una cadena de los cambios de linea, tabuladores
+     * y demas espacios insertados por el JTextPane
+     * @param entrada String a limpiar
+     * @return Regresa la cadena limpia
+     */
     private String limpiarCadena(String entrada) {
         return entrada.replaceAll("[\n\r\t]", "") + " " + " ";
         
        
     }
 
+    /**
+     * Metodo para hacer el corrimiento de columna cuando 
+     * una palabra es aceptada o agregada como error
+     * @param length longitud de la palabra que recien
+     * se termina de analizar
+     */
     private void modificarColumna(int length) {
         columna = columna + length;
     }
-
-    private String relleno(){
-        String salida = "";
-        for(int i = 0 ; i < 80 ; i++){
-            salida = salida + "";
-        }
-        salida = salida + newline;
-        return salida;
-    }
     
+   
+   /**
+    * Metodo que se utiliza para escribir en el StyledDocument con los estilos definidos
+    * @param contenedor El contenedor al cual se le desea introducir datos
+    * @param vl dato que se desea ingresar al contenedor
+    * @param modo Estilo que se desea utilizar para introducir los datos.
+    */ 
     private void escribirContenedor(DefaultStyledDocument contenedor, String vl, AttributeSet modo){
         try {
             contenedor.insertString(contenedor.getLength(),vl, modo );
@@ -1372,7 +1410,10 @@ public class Analizador {
             Logger.getLogger(Analizador.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-
+    /**
+     * Metodo que introduce un cambio de line en el contenedor
+     * @param contenedor  Contenedor al cual se le desea ingresar un cambio de linea
+     */
     private void hacerCambio(DefaultStyledDocument contenedor) {
           if(cambioFila()){
               try {
@@ -1385,6 +1426,11 @@ public class Analizador {
           }            
     }
 
+    /**
+     * Metodo que detecta si una expresion contiene un punto
+     * @param valorLexema String a analizar
+     * @return Verdadero en caso contenga un punto
+     */
     private boolean tienePunto(String valorLexema) {
         boolean retorno = false;
         if(valorLexema.lastIndexOf(".") > 0){
@@ -1392,35 +1438,66 @@ public class Analizador {
         }
         return retorno;
     }
-    
+    /**
+     *  Metodo para obtener la lista de errore
+     * @return La lista de errores
+     */
         public ArrayList<String> getError() {
         return error;
     }
 
+    /**
+     *  Metodo para obtener los lexemas
+     * @return La lista de lexemas
+     */
     public ArrayList<String> getLexema() {
         return lexema;
     }
 
+    /**
+     * Metodo para obtener la lista de tipos
+     * @return La lista de tipos
+     */
     public ArrayList<String> getTipo() {
         return tipo;
     }
-
+    
+    /**
+     *  Metodo para obtener la lista de posiciones para los lexemas
+     * @return Lista de posiciones de los lexemas
+     */
     public ArrayList<Integer> getPosicionFila() {
         return posicionFila;
     }
 
+    /**
+     * Metodo para obtener la lista de posiciones de Columna para los lexemas
+     * @return Lista de posiciones de Columna para lexemas
+     */
     public ArrayList<Integer> getPosicionColumna() {
         return posicionColumna;
     }
 
+    /**
+     *  Metodo para obtener la lista de posiciones de fila para los errores
+     * @return Lista de posiciones de Filas de los errores
+     */
     public ArrayList<Integer> getPosicionFilaError() {
         return posicionFilaError;
     }
 
+    /**
+     * Metodo para obtener la lista de columnas de los errores
+     * @return Lista de posiciones en columna de los errores
+     */
     public ArrayList<Integer> getPosicionColumnaError() {
         return posicionColumnaError;
     }
 
+    /**
+     * Metodo para recuperar los tokens
+     * @return Lista de tokens.
+     */
     public ArrayList<Integer> getToken() {
         return token;
     }

@@ -14,16 +14,24 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- *
+ * Clase que permite leer y escribir en archivos .body
  * @author hugo
  */
 public class Lectura {
     private String ruta;
     
+    /**
+     * Constructor de la clase
+     * @param ruta Ruta del archivo que se desea leer
+     */
     public Lectura(String ruta){
         this.ruta = ruta;
     }
     
+    /**
+     * Metodo que recupera la informacion del archivo
+     * @return Returna una cadena con la informacion contenida en el archivo
+     */
     public String leer(){
         String lectura = "";
         try {
